@@ -30,6 +30,7 @@
   --md-error: #BA1A1A;
   --md-on-error: #FFFFFF;
   --md-error-container: #FFDAD6;
+  --md-on-error-container: #410002;
 
   --md-surface: #F8FAF9;
   --md-surface-dim: #D8DBD9;
@@ -98,7 +99,6 @@ html, body {
 .screen::-webkit-scrollbar { display: none; }
 .screen.active { display: flex; }
 
-/* ===== NAVIGATION BAR ===== */
 .nav-bar {
   height: 80px; flex-shrink: 0;
   background: var(--md-surface-container);
@@ -123,7 +123,6 @@ html, body {
 .nav-btn.active svg { fill: var(--md-on-secondary-container); }
 .nav-btn.active .nav-label { color: var(--md-on-surface); font-weight: 700; }
 
-/* ===== TOP BAR ===== */
 .top-bar {
   display: flex; align-items: center; padding: 16px 16px 8px 24px;
   min-height: 64px;
@@ -138,7 +137,6 @@ html, body {
 .icon-btn:active { background: var(--md-surface-container-high); }
 .icon-btn svg { width: 24px; height: 24px; fill: var(--md-on-surface-variant); }
 
-/* ===== FEED SCREEN ===== */
 .feed-tabs {
   display: flex; padding: 0 16px;
   border-bottom: 1px solid var(--md-surface-container-high);
@@ -184,6 +182,7 @@ html, body {
   display: -webkit-box; -webkit-line-clamp: 2;
   -webkit-box-orient: vertical; overflow: hidden; margin-bottom: 4px;
 }
+.article-card.read h3 { color: var(--md-on-surface-variant); }
 .article-card .card-excerpt {
   font: var(--body-medium); color: var(--md-on-surface-variant);
   display: -webkit-box; -webkit-line-clamp: 2;
@@ -192,9 +191,10 @@ html, body {
 .article-card .card-thumb {
   width: 88px; height: 88px; border-radius: var(--shape-md);
   background: var(--md-surface-container-high); flex-shrink: 0;
+  object-fit: cover; overflow: hidden;
 }
+.article-card .card-thumb img { width: 100%; height: 100%; object-fit: cover; }
 
-/* ===== FAB ===== */
 .fab {
   position: fixed;
   bottom: calc(96px + var(--safe-bottom)); right: 16px;
@@ -208,7 +208,6 @@ html, body {
 .fab:active { transform: scale(0.92); }
 .fab svg { width: 24px; height: 24px; fill: var(--md-on-primary-container); }
 
-/* ===== ADD SOURCE SCREEN ===== */
 .back-bar {
   display: flex; align-items: center; padding: 8px; min-height: 56px;
 }
@@ -247,6 +246,7 @@ html, body {
   color: var(--md-primary);
 }
 .m3-field .supporting { padding: 6px 24px 0; font: var(--body-small); color: var(--md-on-surface-variant); }
+.m3-field .error-text { padding: 6px 24px 0; font: var(--body-small); color: var(--md-error); display: none; }
 
 .segment-group { display: flex; flex-direction: column; }
 .segment-group .segment-label { display: block; padding: 0 0 12px 4px; font: var(--label-large); color: var(--md-on-surface-variant); }
@@ -265,17 +265,18 @@ html, body {
   width: 100%; padding: 24px; font: var(--label-large); font-size: 18px;
   background: var(--md-primary); color: var(--md-on-primary);
   border: none; border-radius: var(--shape-full); cursor: pointer;
-  font-weight: 600;
+  font-weight: 600; position: relative; overflow: hidden;
 }
 .m3-btn-filled:active { opacity: 0.88; }
+.m3-btn-filled:disabled { opacity: 0.5; pointer-events: none; }
 .m3-btn-tonal {
   width: 100%; padding: 22px; font: var(--label-large); font-size: 16px;
   background: var(--md-secondary-container); color: var(--md-on-secondary-container);
   border: none; border-radius: var(--shape-full); cursor: pointer;
 }
 .m3-btn-tonal:active { opacity: 0.88; }
+.m3-btn-tonal:disabled { opacity: 0.5; pointer-events: none; }
 
-/* ===== READER SCREEN ===== */
 .reader-content { padding: 0 24px 40px; }
 .reader-content .reader-source {
   display: inline-flex; align-items: center; gap: 8px;
@@ -292,17 +293,45 @@ html, body {
 }
 .reader-content .reader-meta .meta-avatar {
   width: 40px; height: 40px; border-radius: var(--shape-full); background: var(--md-surface-container-high);
+  display: grid; place-items: center; font: var(--label-large); font-weight: 700;
+  color: var(--md-on-surface-variant);
 }
 .reader-content .reader-meta .meta-info { font: var(--body-medium); color: var(--md-on-surface-variant); }
 .reader-content .reader-meta .meta-info strong { display: block; color: var(--md-on-surface); font: var(--label-large); }
-.reader-content p { font: var(--body-large); font-size: 17px; line-height: 1.75; color: var(--md-on-surface-variant); margin-bottom: 20px; }
-.reader-content .callout {
-  padding: 20px 24px; background: var(--md-primary-container);
+.reader-content .reader-body p { font: var(--body-large); font-size: 17px; line-height: 1.75; color: var(--md-on-surface-variant); margin-bottom: 20px; }
+.reader-content .reader-body h2 { font: var(--title-large); color: var(--md-on-surface); margin: 28px 0 12px; }
+.reader-content .reader-body h3 { font: var(--title-medium); color: var(--md-on-surface); margin: 24px 0 8px; }
+.reader-content .reader-body blockquote {
+  padding: 16px 20px; background: var(--md-primary-container);
   border-radius: var(--shape-lg); font: var(--body-medium); line-height: 1.6;
-  color: var(--md-on-primary-container); margin: 24px 0;
+  color: var(--md-on-primary-container); margin: 20px 0;
 }
+.reader-content .reader-body ul, .reader-content .reader-body ol {
+  padding-left: 24px; margin-bottom: 16px;
+}
+.reader-content .reader-body li { font: var(--body-large); line-height: 1.7; color: var(--md-on-surface-variant); margin-bottom: 8px; }
+.reader-content .reader-body img { max-width: 100%; border-radius: var(--shape-md); margin: 16px 0; }
+.reader-content .reader-body a { color: var(--md-primary); text-decoration: underline; }
+.reader-content .reader-body pre {
+  background: var(--md-surface-container-highest); padding: 16px; border-radius: var(--shape-md);
+  overflow-x: auto; font: 14px/1.5 monospace; margin: 16px 0;
+}
+.reader-content .reader-body code { font: 14px/1.5 monospace; background: var(--md-surface-container-high); padding: 2px 6px; border-radius: 4px; }
+.reader-content .reader-body pre code { background: none; padding: 0; }
 
-/* ===== DISCOVER SCREEN ===== */
+.ai-format-bar {
+  display: flex; gap: 8px; padding: 16px 0; margin-bottom: 16px;
+  border-bottom: 1px solid var(--md-outline-variant);
+}
+.ai-format-btn {
+  padding: 10px 18px; font: var(--label-large);
+  background: var(--md-tertiary-container); color: var(--md-on-tertiary-container);
+  border: none; border-radius: var(--shape-full); cursor: pointer;
+  display: inline-flex; align-items: center; gap: 6px;
+}
+.ai-format-btn:active { opacity: 0.8; }
+.ai-format-btn svg { width: 18px; height: 18px; fill: currentColor; }
+
 .discover-search-bar { margin: 8px 16px 16px; position: relative; }
 .discover-search-bar input {
   width: 100%; padding: 22px 22px 22px 56px; font: var(--body-large);
@@ -324,7 +353,7 @@ html, body {
 .chip.active { background: var(--md-secondary-container); border-color: transparent; color: var(--md-on-secondary-container); }
 .chip:active:not(.active) { background: var(--md-surface-container); }
 
-.discover-list { padding: 0 16px 16px; display: flex; flex-direction: column; gap: 2px; }
+.discover-list { padding: 0 16px 100px; display: flex; flex-direction: column; gap: 2px; }
 .discover-item {
   display: flex; align-items: center; gap: 16px;
   padding: 16px; border-radius: var(--shape-md); cursor: pointer;
@@ -343,11 +372,12 @@ html, body {
   border: 1px solid var(--md-outline); background: none; cursor: pointer;
   display: grid; place-items: center;
 }
+.discover-item .di-action.added { background: var(--md-primary-container); border-color: var(--md-primary-container); }
+.discover-item .di-action.added svg { fill: var(--md-on-primary-container); }
 .discover-item .di-action:active { background: var(--md-surface-container-high); }
 .discover-item .di-action svg { width: 20px; height: 20px; fill: var(--md-on-surface-variant); }
 
-/* ===== SETTINGS SCREEN ===== */
-.settings-content { padding: 0 0 24px; }
+.settings-content { padding: 0 0 100px; }
 .settings-section-label { padding: 28px 24px 8px; font: var(--label-large); color: var(--md-primary); text-transform: uppercase; letter-spacing: 0.5px; }
 .settings-item {
   display: flex; align-items: center; gap: 16px;
@@ -377,85 +407,92 @@ html, body {
 .settings-fields { padding: 8px 24px 16px; display: flex; flex-direction: column; gap: 20px; }
 .settings-fields .m3-field input { padding: 28px 20px 12px; font-size: 16px; border-radius: var(--shape-xl); }
 .settings-fields .m3-field label { left: 20px; }
+
+.empty-state {
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center; padding: 64px 32px; text-align: center; flex: 1;
+}
+.empty-state svg { width: 64px; height: 64px; fill: var(--md-outline-variant); margin-bottom: 16px; }
+.empty-state h3 { font: var(--title-large); color: var(--md-on-surface); margin-bottom: 8px; }
+.empty-state p { font: var(--body-medium); color: var(--md-on-surface-variant); max-width: 280px; }
+
+.loading-indicator {
+  display: none; align-items: center; justify-content: center; padding: 24px;
+}
+.loading-indicator.visible { display: flex; }
+.spinner {
+  width: 32px; height: 32px; border: 3px solid var(--md-surface-container-high);
+  border-top-color: var(--md-primary); border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.snackbar {
+  position: fixed; bottom: 96px; left: 16px; right: 16px;
+  background: var(--md-inverse-surface); color: var(--md-inverse-on-surface);
+  padding: 16px 20px; border-radius: var(--shape-md);
+  font: var(--body-medium); z-index: 100;
+  transform: translateY(120%); transition: transform 0.3s cubic-bezier(0.2, 0, 0, 1);
+  display: flex; align-items: center; gap: 12px;
+}
+.snackbar.visible { transform: translateY(0); }
+.snackbar .snack-action {
+  margin-left: auto; font: var(--label-large); color: var(--md-primary-container);
+  background: none; border: none; cursor: pointer;
+}
+
+.refresh-pull {
+  display: flex; align-items: center; justify-content: center;
+  padding: 12px; overflow: hidden; max-height: 0; transition: max-height 0.3s;
+}
+.refresh-pull.active { max-height: 48px; }
+.refresh-pull .spinner { width: 24px; height: 24px; }
+
+.dialog-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.4);
+  display: none; align-items: center; justify-content: center;
+  z-index: 200; padding: 24px;
+}
+.dialog-overlay.visible { display: flex; }
+.dialog {
+  background: var(--md-surface-container-highest); border-radius: var(--shape-xl);
+  padding: 24px; width: 100%; max-width: 380px;
+}
+.dialog h2 { font: var(--headline-small); color: var(--md-on-surface); margin-bottom: 16px; }
+.dialog p { font: var(--body-medium); color: var(--md-on-surface-variant); margin-bottom: 20px; }
+.dialog-actions { display: flex; gap: 8px; justify-content: flex-end; }
+.dialog-actions button {
+  padding: 12px 24px; font: var(--label-large); border: none;
+  border-radius: var(--shape-full); cursor: pointer;
+}
+.dialog-actions .btn-text { background: none; color: var(--md-primary); }
+.dialog-actions .btn-filled { background: var(--md-primary); color: var(--md-on-primary); }
 </style>
 </head>
 <body>
 <div class="app-shell">
 
-  <!-- ===== FEED ===== -->
   <div class="screen active" id="screen-feed">
     <div class="top-bar">
       <h1>Feeds</h1>
-      <button class="icon-btn"><svg viewBox="0 0 24 24"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg></button>
+      <button class="icon-btn" id="btn-refresh" title="Refresh all feeds">
+        <svg viewBox="0 0 24 24"><path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
+      </button>
     </div>
+    <div class="refresh-pull" id="refresh-indicator"><div class="spinner"></div></div>
     <div class="feed-tabs">
-      <button class="feed-tab active" onclick="setTab(this)">All</button>
-      <button class="feed-tab" onclick="setTab(this)">Unread</button>
-      <button class="feed-tab" onclick="setTab(this)">Starred</button>
+      <button class="feed-tab active" data-filter="all">All</button>
+      <button class="feed-tab" data-filter="unread">Unread</button>
+      <button class="feed-tab" data-filter="starred">Starred</button>
     </div>
-    <div class="feed-cards">
-      <div class="feed-section-label">Today</div>
-      <div class="article-card" onclick="showScreen('reader')">
-        <div class="card-body">
-          <div class="source-line">
-            <span class="source-dot">V</span>
-            <span class="source-name">The Verge</span>
-            <span class="source-time">35m</span>
-          </div>
-          <h3>Android 16 redesigns the notification shade with dynamic grouping</h3>
-          <p class="card-excerpt">Google is overhauling notifications with AI-powered clustering that groups related messages across apps into threads.</p>
-        </div>
-        <div class="card-thumb"></div>
-      </div>
-      <div class="article-card" onclick="showScreen('reader')">
-        <div class="card-body">
-          <div class="source-line">
-            <span class="source-dot" style="background: var(--md-tertiary-container); color: var(--md-on-tertiary-container);">A</span>
-            <span class="source-name">Ars Technica</span>
-            <span class="source-time">1h</span>
-          </div>
-          <h3>Why developers are returning to RSS in 2026</h3>
-          <p class="card-excerpt">Feed readers are making a quiet comeback as developers tire of algorithmic timelines and walled gardens.</p>
-        </div>
-      </div>
-      <div class="article-card" onclick="showScreen('reader')">
-        <div class="card-body">
-          <div class="source-line">
-            <span class="source-dot" style="background: var(--md-secondary-container); color: var(--md-on-secondary-container);">H</span>
-            <span class="source-name">Hacker News</span>
-            <span class="source-time">2h</span>
-          </div>
-          <h3>Show HN: Open-source headless scraper for JavaScript-heavy sites</h3>
-          <p class="card-excerpt">A lightweight Chromium-based scraper that outputs clean semantic HTML, designed for RSS feed generation.</p>
-        </div>
-      </div>
-      <div class="feed-section-label">Yesterday</div>
-      <div class="article-card" onclick="showScreen('reader')">
-        <div class="card-body">
-          <div class="source-line">
-            <span class="source-dot" style="background: var(--md-surface-container-highest); color: var(--md-on-surface-variant);">S</span>
-            <span class="source-name">Smashing Magazine</span>
-            <span class="source-time">18h</span>
-          </div>
-          <h3>CSS reset for 2026: only the rules you actually need</h3>
-          <p class="card-excerpt">An updated minimal reset that accounts for container queries, view transitions, and the new dialog element.</p>
-        </div>
-      </div>
-      <div class="article-card" onclick="showScreen('reader')">
-        <div class="card-body">
-          <div class="source-line">
-            <span class="source-dot" style="background: var(--md-surface-container-highest); color: var(--md-on-surface-variant);">W</span>
-            <span class="source-name">Wired</span>
-            <span class="source-time">22h</span>
-          </div>
-          <h3>The economics of free-tier APIs that power indie RSS readers</h3>
-          <p class="card-excerpt">Small developer-run services face increasing bandwidth costs as their user bases grow beyond hobbyist scale.</p>
-        </div>
-      </div>
+    <div class="feed-cards" id="feed-list"></div>
+    <div class="empty-state" id="feed-empty" style="display:none;">
+      <svg viewBox="0 0 24 24"><path d="M6.18 15.64a2.18 2.18 0 0 1 2.18 2.18C8.36 19 7.36 20 6.18 20C5 20 4 19 4 17.82a2.18 2.18 0 0 1 2.18-2.18M4 4.44A15.56 15.56 0 0 1 19.56 20h-2.83A12.73 12.73 0 0 0 4 7.27V4.44m0 5.66a9.9 9.9 0 0 1 9.9 9.9h-2.83A7.07 7.07 0 0 0 4 12.93V10.1z"/></svg>
+      <h3>No feeds yet</h3>
+      <p>Tap + to add your first source. We'll fetch and format the RSS feed for you.</p>
     </div>
   </div>
 
-  <!-- ===== ADD SOURCE ===== -->
   <div class="screen" id="screen-add">
     <div class="back-bar">
       <button class="icon-btn" onclick="showScreen('feed')">
@@ -472,203 +509,1315 @@ html, body {
         <input type="url" placeholder=" " id="url-field" />
         <label for="url-field">Website URL</label>
         <p class="supporting">Any page — we'll detect the RSS feed or scrape one</p>
+        <p class="error-text" id="url-error"></p>
       </div>
       <div class="m3-field">
         <input type="text" placeholder=" " id="name-field" />
-        <label for="name-field">Feed name</label>
+        <label for="name-field">Feed name (optional)</label>
       </div>
       <div class="segment-group">
         <span class="segment-label">Scrape mode</span>
-        <div class="segments">
-          <button class="segment active" onclick="setSegment(this)">Auto-detect</button>
-          <button class="segment" onclick="setSegment(this)">Full page</button>
-          <button class="segment" onclick="setSegment(this)">CSS selector</button>
+        <div class="segments" id="scrape-mode">
+          <button class="segment active" data-mode="auto">Auto-detect</button>
+          <button class="segment" data-mode="fullpage">Full page</button>
+          <button class="segment" data-mode="selector">CSS selector</button>
         </div>
       </div>
-      <div class="m3-field">
+      <div class="m3-field" id="selector-group" style="display:none;">
         <input type="text" placeholder=" " id="selector-field" />
         <label for="selector-field">CSS selector</label>
         <p class="supporting">e.g. article, .post-content, main > div</p>
       </div>
       <div class="m3-field">
         <select id="interval-field">
-          <option>Every 15 minutes</option>
-          <option>Every 30 minutes</option>
-          <option selected>Every hour</option>
-          <option>Every 6 hours</option>
-          <option>Once a day</option>
+          <option value="900000">Every 15 minutes</option>
+          <option value="1800000">Every 30 minutes</option>
+          <option value="3600000" selected>Every hour</option>
+          <option value="21600000">Every 6 hours</option>
+          <option value="86400000">Once a day</option>
         </select>
         <label for="interval-field">Refresh interval</label>
       </div>
-      <button class="m3-btn-filled" onclick="showScreen('feed')">Add source</button>
-      <button class="m3-btn-tonal">Test scrape first</button>
+      <button class="m3-btn-filled" id="btn-add-source">Add source</button>
+      <button class="m3-btn-tonal" id="btn-test-scrape">Test scrape first</button>
     </div>
+    <div class="loading-indicator" id="add-loading"><div class="spinner"></div></div>
   </div>
 
-  <!-- ===== READER ===== -->
   <div class="screen" id="screen-reader">
     <div class="back-bar">
       <button class="icon-btn" onclick="showScreen('feed')">
         <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
       </button>
       <div class="spacer"></div>
-      <button class="icon-btn"><svg viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/></svg></button>
-      <button class="icon-btn"><svg viewBox="0 0 24 24"><path d="M17 3H7c-1.1 0-2 .9-2 2v16l7-3 7 3V5c0-1.1-.9-2-2-2z"/></svg></button>
+      <button class="icon-btn" id="btn-share" title="Share">
+        <svg viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/></svg>
+      </button>
+      <button class="icon-btn" id="btn-star" title="Star">
+        <svg viewBox="0 0 24 24"><path d="M17 3H7c-1.1 0-2 .9-2 2v16l7-3 7 3V5c0-1.1-.9-2-2-2z"/></svg>
+      </button>
     </div>
-    <div class="reader-content">
-      <div class="reader-source"><span class="src-mark"></span> The Verge</div>
-      <h1>Android 16 redesigns the notification shade with dynamic grouping</h1>
+    <div class="reader-content" id="reader-content">
+      <div class="reader-source"><span class="src-mark"></span> <span id="reader-source-name"></span></div>
+      <h1 id="reader-title"></h1>
       <div class="reader-meta">
-        <div class="meta-avatar"></div>
-        <div class="meta-info"><strong>Dieter Bohn</strong>May 31, 2026 · 6 min read</div>
+        <div class="meta-avatar" id="reader-avatar"></div>
+        <div class="meta-info"><strong id="reader-author"></strong><span id="reader-date"></span></div>
       </div>
-      <p>Google is overhauling the notification system in Android 16 with "dynamic grouping" — an AI-powered feature that clusters related notifications across apps into unified conversation threads.</p>
-      <div class="callout">Notifications from the same conversation thread (email reply, Slack message, SMS) are now grouped into a single expandable card, regardless of the source app.</div>
-      <p>The system uses on-device language models to identify conversational context, ensuring that related messages aren't lost in the noise of unrelated alerts. Users can train the grouping by manually splitting or merging notification clusters.</p>
-      <p>Developer Preview 3 ships this week with the feature enabled by default on Pixel. OEM adoption is expected by Q4 2026.</p>
+      <div class="ai-format-bar" id="ai-bar" style="display:none;">
+        <button class="ai-format-btn" id="btn-ai-summarize">
+          <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+          Summarize
+        </button>
+        <button class="ai-format-btn" id="btn-ai-simplify">
+          <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+          Simplify
+        </button>
+      </div>
+      <div class="reader-body" id="reader-body"></div>
     </div>
+    <div class="loading-indicator" id="reader-loading"><div class="spinner"></div></div>
   </div>
 
-  <!-- ===== DISCOVER ===== -->
   <div class="screen" id="screen-discover">
     <div class="top-bar"><h1>Discover</h1></div>
     <div class="discover-search-bar">
       <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
-      <input type="text" placeholder="Search sources or paste URL" />
+      <input type="text" placeholder="Search sources or paste URL" id="discover-search" />
     </div>
-    <div class="chip-row">
-      <button class="chip active" onclick="setChip(this)">All</button>
-      <button class="chip" onclick="setChip(this)">Technology</button>
-      <button class="chip" onclick="setChip(this)">Design</button>
-      <button class="chip" onclick="setChip(this)">Business</button>
-      <button class="chip" onclick="setChip(this)">Science</button>
-      <button class="chip" onclick="setChip(this)">Gaming</button>
+    <div class="chip-row" id="discover-chips">
+      <button class="chip active" data-cat="all">All</button>
+      <button class="chip" data-cat="technology">Technology</button>
+      <button class="chip" data-cat="design">Design</button>
+      <button class="chip" data-cat="business">Business</button>
+      <button class="chip" data-cat="science">Science</button>
+      <button class="chip" data-cat="news">News</button>
     </div>
-    <div class="discover-list">
-      <div class="discover-item">
-        <div class="di-icon">TC</div>
-        <div class="di-text"><h4>TechCrunch</h4><p>techcrunch.com · Startups, funding, product launches</p></div>
-        <button class="di-action"><svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg></button>
-      </div>
-      <div class="discover-item">
-        <div class="di-icon">PE</div>
-        <div class="di-text"><h4>The Pragmatic Engineer</h4><p>blog.pragmaticengineer.com · Software engineering</p></div>
-        <button class="di-action"><svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg></button>
-      </div>
-      <div class="discover-item">
-        <div class="di-icon">CT</div>
-        <div class="di-text"><h4>CSS-Tricks</h4><p>css-tricks.com · Frontend, CSS, web standards</p></div>
-        <button class="di-action"><svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg></button>
-      </div>
-      <div class="discover-item">
-        <div class="di-icon">DF</div>
-        <div class="di-text"><h4>Daring Fireball</h4><p>daringfireball.net · Apple, tech commentary</p></div>
-        <button class="di-action"><svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg></button>
-      </div>
-      <div class="discover-item">
-        <div class="di-icon">9t</div>
-        <div class="di-text"><h4>9to5Google</h4><p>9to5google.com · Android, Pixel, Google services</p></div>
-        <button class="di-action"><svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg></button>
-      </div>
-    </div>
+    <div class="discover-list" id="discover-list"></div>
   </div>
 
-  <!-- ===== SETTINGS ===== -->
   <div class="screen" id="screen-settings">
     <div class="top-bar"><h1>Settings</h1></div>
     <div class="settings-content">
+      <div class="settings-section-label">AI Engine</div>
+      <div class="settings-fields">
+        <div class="m3-field">
+          <input type="password" placeholder=" " id="openai-key-field" />
+          <label for="openai-key-field">OpenAI API key</label>
+          <p class="supporting">Used for AI summarization and content formatting</p>
+        </div>
+      </div>
+      <div class="settings-item" id="setting-ai-auto">
+        <svg class="si-icon" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+        <div class="si-body"><h4>Auto-format articles</h4><p>Use AI to clean up scraped content automatically</p></div>
+        <div class="m3-switch" id="switch-ai-auto"></div>
+      </div>
+
       <div class="settings-section-label">Scraping</div>
-      <div class="settings-item">
+      <div class="settings-item" id="setting-interval">
         <svg class="si-icon" viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
         <div class="si-body"><h4>Default refresh interval</h4><p>How often to check sources for updates</p></div>
-        <span class="si-value">1 hour</span>
+        <span class="si-value" id="val-interval">1 hour</span>
       </div>
-      <div class="settings-item">
-        <svg class="si-icon" viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z"/></svg>
-        <div class="si-body"><h4>Render engine</h4><p>Used for JavaScript-heavy pages</p></div>
-        <span class="si-value">Chromium</span>
-      </div>
-      <div class="settings-item">
+      <div class="settings-item" id="setting-fulltext">
         <svg class="si-icon" viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zM6 20V4h7v5h5v11H6z"/></svg>
         <div class="si-body"><h4>Full-text extraction</h4><p>Always scrape complete article body</p></div>
-        <div class="m3-switch on" onclick="this.classList.toggle('on')"></div>
+        <div class="m3-switch on" id="switch-fulltext"></div>
       </div>
-      <div class="settings-item">
-        <svg class="si-icon" viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 14H4V8l8 5 8-5v10zm-8-7L4 6h16l-8 5z"/></svg>
+      <div class="settings-item" id="setting-notifs">
+        <svg class="si-icon" viewBox="0 0 24 24"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
         <div class="si-body"><h4>Notifications</h4><p>Alert when new articles arrive</p></div>
-        <div class="m3-switch" onclick="this.classList.toggle('on')"></div>
+        <div class="m3-switch" id="switch-notifs"></div>
       </div>
+
       <div class="settings-section-label">Display</div>
-      <div class="settings-item">
-        <svg class="si-icon" viewBox="0 0 24 24"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9c.83 0 1.5-.67 1.5-1.5 0-.39-.15-.74-.39-1.01-.23-.26-.38-.61-.38-.99 0-.83.67-1.5 1.5-1.5H16c2.76 0 5-2.24 5-5 0-4.42-4.03-8-9-8z"/></svg>
-        <div class="si-body"><h4>Color seed</h4><p>Material You dynamic color source</p></div>
-        <span class="si-value">Teal</span>
-      </div>
-      <div class="settings-item">
+      <div class="settings-item" id="setting-fontsize">
         <svg class="si-icon" viewBox="0 0 24 24"><path d="M5 4v3h5.5v12h3V7H19V4z"/></svg>
         <div class="si-body"><h4>Reader font size</h4><p>Text size in article view</p></div>
-        <span class="si-value">Large</span>
+        <span class="si-value" id="val-fontsize">Medium</span>
       </div>
+
       <div class="settings-section-label">Advanced</div>
       <div class="settings-fields">
         <div class="m3-field">
-          <input type="text" placeholder=" " id="ua-field" value="Mozilla/5.0 (compatible; FeedBot/2.0)" />
+          <input type="text" placeholder=" " id="ua-field" value="Mozilla/5.0 (compatible; RSSBot/2.0)" />
           <label for="ua-field">Custom User-Agent</label>
         </div>
         <div class="m3-field">
           <input type="url" placeholder=" " id="proxy-field" />
-          <label for="proxy-field">Proxy address</label>
-          <p class="supporting">socks5:// or http:// proxy for scraping requests</p>
+          <label for="proxy-field">CORS proxy URL</label>
+          <p class="supporting">Default: allorigins.win — change if blocked</p>
         </div>
+      </div>
+
+      <div class="settings-section-label">Data</div>
+      <div class="settings-item" id="setting-export">
+        <svg class="si-icon" viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+        <div class="si-body"><h4>Export OPML</h4><p>Download your feed list as OPML file</p></div>
+      </div>
+      <div class="settings-item" id="setting-import">
+        <svg class="si-icon" viewBox="0 0 24 24"><path d="M9 16h6v-6h4l-7-7-7 7h4v6zm-4 2h14v2H5v-2z"/></svg>
+        <div class="si-body"><h4>Import OPML</h4><p>Add feeds from an OPML file</p></div>
+      </div>
+      <div class="settings-item" id="setting-clear">
+        <svg class="si-icon" viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" fill="var(--md-error)"/></svg>
+        <div class="si-body"><h4>Clear all data</h4><p>Delete all feeds, articles, and settings</p></div>
       </div>
     </div>
   </div>
 
-  <!-- FAB -->
-  <button class="fab" id="fab-btn" onclick="showScreen('add')">
+  <button class="fab" id="fab-btn">
     <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
   </button>
 
-  <!-- Navigation Bar -->
   <nav class="nav-bar">
-    <button class="nav-btn active" onclick="showScreen('feed')">
+    <button class="nav-btn active" data-screen="feed">
       <div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M6.18 15.64a2.18 2.18 0 0 1 2.18 2.18C8.36 19 7.36 20 6.18 20C5 20 4 19 4 17.82a2.18 2.18 0 0 1 2.18-2.18M4 4.44A15.56 15.56 0 0 1 19.56 20h-2.83A12.73 12.73 0 0 0 4 7.27V4.44m0 5.66a9.9 9.9 0 0 1 9.9 9.9h-2.83A7.07 7.07 0 0 0 4 12.93V10.1z"/></svg></div>
       <span class="nav-label">Feed</span>
     </button>
-    <button class="nav-btn" onclick="showScreen('discover')">
+    <button class="nav-btn" data-screen="discover">
       <div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M12 10.9c-.61 0-1.1.49-1.1 1.1s.49 1.1 1.1 1.1c.61 0 1.1-.49 1.1-1.1s-.49-1.1-1.1-1.1zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm2.19 12.19L6 18l3.81-8.19L18 6l-3.81 8.19z"/></svg></div>
       <span class="nav-label">Discover</span>
     </button>
-    <button class="nav-btn" onclick="showScreen('settings')">
+    <button class="nav-btn" data-screen="settings">
       <div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg></div>
       <span class="nav-label">Settings</span>
     </button>
   </nav>
 </div>
 
+<div class="snackbar" id="snackbar">
+  <span id="snack-msg"></span>
+  <button class="snack-action" id="snack-action" style="display:none;"></button>
+</div>
+
+<div class="dialog-overlay" id="dialog-overlay">
+  <div class="dialog" id="dialog">
+    <h2 id="dialog-title"></h2>
+    <p id="dialog-body"></p>
+    <div class="dialog-actions">
+      <button class="btn-text" id="dialog-cancel">Cancel</button>
+      <button class="btn-filled" id="dialog-confirm">Confirm</button>
+    </div>
+  </div>
+</div>
+
+<input type="file" id="opml-file-input" accept=".opml,.xml" style="display:none;" />
+
 <script>
+(function() {
+'use strict';
+
+// ===== DATABASE =====
+var DB_NAME = 'rss-scraper';
+var DB_VERSION = 1;
+var db = null;
+
+function openDB() {
+  return new Promise(function(resolve, reject) {
+    var req = indexedDB.open(DB_NAME, DB_VERSION);
+    req.onupgradeneeded = function(e) {
+      var d = e.target.result;
+      if (!d.objectStoreNames.contains('sources')) {
+        var s = d.createObjectStore('sources', { keyPath: 'id' });
+        s.createIndex('url', 'url', { unique: true });
+      }
+      if (!d.objectStoreNames.contains('articles')) {
+        var a = d.createObjectStore('articles', { keyPath: 'id' });
+        a.createIndex('sourceId', 'sourceId');
+        a.createIndex('date', 'date');
+        a.createIndex('starred', 'starred');
+      }
+      if (!d.objectStoreNames.contains('settings')) {
+        d.createObjectStore('settings', { keyPath: 'key' });
+      }
+    };
+    req.onsuccess = function(e) { db = e.target.result; resolve(db); };
+    req.onerror = function(e) { reject(e.target.error); };
+  });
+}
+
+function dbPut(store, data) {
+  return new Promise(function(resolve, reject) {
+    var tx = db.transaction(store, 'readwrite');
+    tx.objectStore(store).put(data);
+    tx.oncomplete = function() { resolve(); };
+    tx.onerror = function(e) { reject(e.target.error); };
+  });
+}
+
+function dbGet(store, key) {
+  return new Promise(function(resolve, reject) {
+    var tx = db.transaction(store, 'readonly');
+    var req = tx.objectStore(store).get(key);
+    req.onsuccess = function() { resolve(req.result); };
+    req.onerror = function(e) { reject(e.target.error); };
+  });
+}
+
+function dbGetAll(store) {
+  return new Promise(function(resolve, reject) {
+    var tx = db.transaction(store, 'readonly');
+    var req = tx.objectStore(store).getAll();
+    req.onsuccess = function() { resolve(req.result || []); };
+    req.onerror = function(e) { reject(e.target.error); };
+  });
+}
+
+function dbDelete(store, key) {
+  return new Promise(function(resolve, reject) {
+    var tx = db.transaction(store, 'readwrite');
+    tx.objectStore(store).delete(key);
+    tx.oncomplete = function() { resolve(); };
+    tx.onerror = function(e) { reject(e.target.error); };
+  });
+}
+
+function dbClear(store) {
+  return new Promise(function(resolve, reject) {
+    var tx = db.transaction(store, 'readwrite');
+    tx.objectStore(store).clear();
+    tx.oncomplete = function() { resolve(); };
+    tx.onerror = function(e) { reject(e.target.error); };
+  });
+}
+
+// ===== SETTINGS =====
+var settings = {
+  openaiKey: '',
+  aiAutoFormat: false,
+  refreshInterval: 3600000,
+  fullText: true,
+  notifications: false,
+  fontSize: 'medium',
+  userAgent: 'Mozilla/5.0 (compatible; RSSBot/2.0)',
+  corsProxy: 'https://api.allorigins.win/raw?url='
+};
+
+async function loadSettings() {
+  try {
+    var items = await dbGetAll('settings');
+    items.forEach(function(item) {
+      if (item.key in settings) settings[item.key] = item.value;
+    });
+  } catch(e) {}
+  applySettingsToUI();
+}
+
+function saveSetting(key, value) {
+  settings[key] = value;
+  return dbPut('settings', { key: key, value: value });
+}
+
+function applySettingsToUI() {
+  var keyField = document.getElementById('openai-key-field');
+  if (keyField) keyField.value = settings.openaiKey || '';
+
+  var aiSwitch = document.getElementById('switch-ai-auto');
+  if (aiSwitch) aiSwitch.classList.toggle('on', settings.aiAutoFormat);
+
+  var ftSwitch = document.getElementById('switch-fulltext');
+  if (ftSwitch) ftSwitch.classList.toggle('on', settings.fullText);
+
+  var nSwitch = document.getElementById('switch-notifs');
+  if (nSwitch) nSwitch.classList.toggle('on', settings.notifications);
+
+  var intVal = document.getElementById('val-interval');
+  if (intVal) {
+    var map = { 900000: '15 min', 1800000: '30 min', 3600000: '1 hour', 21600000: '6 hours', 86400000: '1 day' };
+    intVal.textContent = map[settings.refreshInterval] || '1 hour';
+  }
+
+  var fsVal = document.getElementById('val-fontsize');
+  if (fsVal) fsVal.textContent = settings.fontSize.charAt(0).toUpperCase() + settings.fontSize.slice(1);
+
+  var uaField = document.getElementById('ua-field');
+  if (uaField) uaField.value = settings.userAgent;
+
+  var proxyField = document.getElementById('proxy-field');
+  if (proxyField) proxyField.value = settings.corsProxy === 'https://api.allorigins.win/raw?url=' ? '' : settings.corsProxy;
+
+  var aiBar = document.getElementById('ai-bar');
+  if (aiBar) aiBar.style.display = settings.openaiKey ? 'flex' : 'none';
+}
+
+// ===== CORS PROXY FETCH =====
+function proxyFetch(url) {
+  var proxy = settings.corsProxy || 'https://api.allorigins.win/raw?url=';
+  return fetch(proxy + encodeURIComponent(url));
+}
+
+// ===== RSS PARSER =====
+function parseRSS(xmlText, sourceUrl) {
+  var parser = new DOMParser();
+  var doc = parser.parseFromString(xmlText, 'text/xml');
+  var articles = [];
+
+  var items = doc.querySelectorAll('item');
+  if (items.length === 0) items = doc.querySelectorAll('entry');
+
+  var feedTitle = '';
+  var titleEl = doc.querySelector('channel > title') || doc.querySelector('feed > title');
+  if (titleEl) feedTitle = titleEl.textContent.trim();
+
+  items.forEach(function(item) {
+    var title = (item.querySelector('title') || {}).textContent || 'Untitled';
+    var link = '';
+    var linkEl = item.querySelector('link');
+    if (linkEl) {
+      link = linkEl.getAttribute('href') || linkEl.textContent || '';
+    }
+    link = link.trim();
+
+    var description = '';
+    var descEl = item.querySelector('description') || item.querySelector('content\\:encoded') || item.querySelector('content') || item.querySelector('summary');
+    if (descEl) description = descEl.textContent || '';
+
+    var pubDate = '';
+    var dateEl = item.querySelector('pubDate') || item.querySelector('published') || item.querySelector('updated') || item.querySelector('dc\\:date');
+    if (dateEl) pubDate = dateEl.textContent || '';
+
+    var author = '';
+    var authorEl = item.querySelector('author name') || item.querySelector('author') || item.querySelector('dc\\:creator');
+    if (authorEl) author = authorEl.textContent || '';
+
+    var thumb = '';
+    var enclosure = item.querySelector('enclosure[type^="image"]');
+    if (enclosure) thumb = enclosure.getAttribute('url') || '';
+    if (!thumb) {
+      var media = item.querySelector('media\\:thumbnail, media\\:content[medium="image"]');
+      if (media) thumb = media.getAttribute('url') || '';
+    }
+    if (!thumb && description) {
+      var imgMatch = description.match(/<img[^>]+src=["']([^"']+)["']/);
+      if (imgMatch) thumb = imgMatch[1];
+    }
+
+    articles.push({
+      title: title.trim(),
+      link: link,
+      content: description,
+      date: pubDate ? new Date(pubDate).toISOString() : new Date().toISOString(),
+      author: author.trim(),
+      thumbnail: thumb
+    });
+  });
+
+  return { feedTitle: feedTitle, articles: articles };
+}
+
+// ===== FEED DISCOVERY =====
+async function discoverFeed(url) {
+  try {
+    var resp = await proxyFetch(url);
+    var text = await resp.text();
+
+    var contentType = resp.headers.get('content-type') || '';
+    if (contentType.includes('xml') || text.trim().startsWith('<?xml') || text.trim().startsWith('<rss') || text.trim().startsWith('<feed')) {
+      return { type: 'rss', url: url, content: text };
+    }
+
+    var parser = new DOMParser();
+    var doc = parser.parseFromString(text, 'text/html');
+
+    var feedLinks = doc.querySelectorAll('link[type="application/rss+xml"], link[type="application/atom+xml"]');
+    if (feedLinks.length > 0) {
+      var feedUrl = feedLinks[0].getAttribute('href');
+      if (feedUrl && !feedUrl.startsWith('http')) {
+        var base = new URL(url);
+        feedUrl = new URL(feedUrl, base).href;
+      }
+      var feedResp = await proxyFetch(feedUrl);
+      var feedText = await feedResp.text();
+      return { type: 'rss', url: feedUrl, content: feedText };
+    }
+
+    var commonPaths = ['/feed', '/rss', '/feed.xml', '/rss.xml', '/atom.xml', '/index.xml'];
+    var base = new URL(url);
+    for (var i = 0; i < commonPaths.length; i++) {
+      try {
+        var tryUrl = base.origin + commonPaths[i];
+        var tryResp = await proxyFetch(tryUrl);
+        if (tryResp.ok) {
+          var tryText = await tryResp.text();
+          if (tryText.trim().startsWith('<?xml') || tryText.trim().startsWith('<rss') || tryText.trim().startsWith('<feed')) {
+            return { type: 'rss', url: tryUrl, content: tryText };
+          }
+        }
+      } catch(e) {}
+    }
+
+    return { type: 'html', url: url, content: text };
+  } catch(e) {
+    throw new Error('Could not reach ' + url + ': ' + e.message);
+  }
+}
+
+// ===== HTML SCRAPER (for sites without RSS) =====
+function scrapeHTML(htmlText, url, mode, selector) {
+  var parser = new DOMParser();
+  var doc = parser.parseFromString(htmlText, 'text/html');
+  var articles = [];
+
+  var elements;
+  if (mode === 'selector' && selector) {
+    elements = doc.querySelectorAll(selector);
+  } else {
+    elements = doc.querySelectorAll('article, [class*="post"], [class*="article"], .entry, .item');
+    if (elements.length === 0) {
+      elements = doc.querySelectorAll('main h2 a, main h3 a, .content h2 a, .content h3 a');
+    }
+  }
+
+  elements.forEach(function(el) {
+    var title = '';
+    var link = '';
+    var excerpt = '';
+
+    if (el.tagName === 'A') {
+      title = el.textContent.trim();
+      link = el.href || el.getAttribute('href') || '';
+    } else {
+      var h = el.querySelector('h1, h2, h3, h4');
+      if (h) title = h.textContent.trim();
+      var a = el.querySelector('a[href]');
+      if (a) link = a.href || a.getAttribute('href') || '';
+      var p = el.querySelector('p');
+      if (p) excerpt = p.textContent.trim().substring(0, 200);
+    }
+
+    if (!link.startsWith('http')) {
+      try { link = new URL(link, url).href; } catch(e) {}
+    }
+
+    if (title && link) {
+      articles.push({
+        title: title,
+        link: link,
+        content: excerpt ? '<p>' + excerpt + '</p>' : '',
+        date: new Date().toISOString(),
+        author: '',
+        thumbnail: ''
+      });
+    }
+  });
+
+  return articles;
+}
+
+// ===== OPENAI INTEGRATION =====
+async function aiFormat(content, mode) {
+  if (!settings.openaiKey) return content;
+
+  var prompt = mode === 'summarize'
+    ? 'Summarize this article in 3-5 clear bullet points. Keep it concise and informative. Return HTML with <ul><li> tags.'
+    : 'Simplify and reformat this article for easy reading. Use short paragraphs, clear headings, and simple language. Return clean HTML.';
+
+  try {
+    var resp = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + settings.openaiKey
+      },
+      body: JSON.stringify({
+        model: 'gpt-4o-mini',
+        messages: [
+          { role: 'system', content: prompt },
+          { role: 'user', content: content.replace(/<[^>]+>/g, ' ').substring(0, 8000) }
+        ],
+        max_tokens: 1000
+      })
+    });
+
+    if (!resp.ok) {
+      var err = await resp.json();
+      throw new Error(err.error ? err.error.message : 'API error');
+    }
+
+    var data = await resp.json();
+    return data.choices[0].message.content;
+  } catch(e) {
+    showSnackbar('AI error: ' + e.message);
+    return content;
+  }
+}
+
+// ===== UI STATE =====
+var currentFilter = 'all';
+var currentArticle = null;
+var sources = [];
+var articles = [];
+
+// ===== NAVIGATION =====
 function showScreen(name) {
   document.querySelectorAll('.screen').forEach(function(s) { s.classList.remove('active'); });
   document.getElementById('screen-' + name).classList.add('active');
   document.querySelectorAll('.nav-btn').forEach(function(n) { n.classList.remove('active'); });
-  var map = { feed: 0, discover: 1, settings: 2, add: -1, reader: -1 };
-  var idx = map[name];
-  if (idx >= 0) document.querySelectorAll('.nav-btn')[idx].classList.add('active');
+  var navMap = { feed: 0, discover: 1, settings: 2 };
+  if (navMap[name] !== undefined) {
+    document.querySelectorAll('.nav-btn')[navMap[name]].classList.add('active');
+  }
   var fab = document.getElementById('fab-btn');
   fab.style.display = (name === 'feed') ? 'grid' : 'none';
+
+  if (name === 'feed') renderFeed();
+  if (name === 'discover') renderDiscover();
 }
-function setTab(el) {
-  el.parentElement.querySelectorAll('.feed-tab').forEach(function(t) { t.classList.remove('active'); });
-  el.classList.add('active');
+window.showScreen = showScreen;
+
+// ===== SNACKBAR =====
+function showSnackbar(msg, actionText, actionFn) {
+  var el = document.getElementById('snackbar');
+  var msgEl = document.getElementById('snack-msg');
+  var actEl = document.getElementById('snack-action');
+  msgEl.textContent = msg;
+  if (actionText) {
+    actEl.textContent = actionText;
+    actEl.style.display = 'block';
+    actEl.onclick = function() { el.classList.remove('visible'); if (actionFn) actionFn(); };
+  } else {
+    actEl.style.display = 'none';
+  }
+  el.classList.add('visible');
+  setTimeout(function() { el.classList.remove('visible'); }, 4000);
 }
-function setSegment(el) {
-  el.parentElement.querySelectorAll('.segment').forEach(function(s) { s.classList.remove('active'); });
-  el.classList.add('active');
+
+// ===== DIALOG =====
+function showDialog(title, body, onConfirm) {
+  document.getElementById('dialog-title').textContent = title;
+  document.getElementById('dialog-body').textContent = body;
+  document.getElementById('dialog-overlay').classList.add('visible');
+  document.getElementById('dialog-confirm').onclick = function() {
+    document.getElementById('dialog-overlay').classList.remove('visible');
+    if (onConfirm) onConfirm();
+  };
+  document.getElementById('dialog-cancel').onclick = function() {
+    document.getElementById('dialog-overlay').classList.remove('visible');
+  };
 }
-function setChip(el) {
-  el.parentElement.querySelectorAll('.chip').forEach(function(c) { c.classList.remove('active'); });
-  el.classList.add('active');
+
+// ===== RENDER FEED =====
+function renderFeed() {
+  var list = document.getElementById('feed-list');
+  var empty = document.getElementById('feed-empty');
+
+  var filtered = articles.slice();
+  if (currentFilter === 'unread') filtered = filtered.filter(function(a) { return !a.read; });
+  if (currentFilter === 'starred') filtered = filtered.filter(function(a) { return a.starred; });
+
+  filtered.sort(function(a, b) { return new Date(b.date) - new Date(a.date); });
+
+  if (filtered.length === 0) {
+    list.innerHTML = '';
+    empty.style.display = 'flex';
+    if (sources.length > 0 && currentFilter !== 'all') {
+      empty.querySelector('h3').textContent = 'Nothing here';
+      empty.querySelector('p').textContent = currentFilter === 'unread' ? 'All caught up!' : 'No starred articles yet.';
+    } else if (sources.length > 0) {
+      empty.querySelector('h3').textContent = 'Fetching articles...';
+      empty.querySelector('p').textContent = 'Pull to refresh or wait for the next auto-fetch.';
+    } else {
+      empty.querySelector('h3').textContent = 'No feeds yet';
+      empty.querySelector('p').textContent = 'Tap + to add your first source.';
+    }
+    return;
+  }
+
+  empty.style.display = 'none';
+
+  var now = new Date();
+  var today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  var yesterday = new Date(today.getTime() - 86400000);
+
+  var html = '';
+  var lastSection = '';
+
+  filtered.forEach(function(article) {
+    var d = new Date(article.date);
+    var section = d >= today ? 'Today' : d >= yesterday ? 'Yesterday' : 'Earlier';
+
+    if (section !== lastSection) {
+      html += '<div class="feed-section-label">' + section + '</div>';
+      lastSection = section;
+    }
+
+    var source = sources.find(function(s) { return s.id === article.sourceId; });
+    var sourceName = source ? source.name : 'Unknown';
+    var sourceInitial = sourceName.charAt(0).toUpperCase();
+    var timeAgo = getTimeAgo(d);
+    var readClass = article.read ? ' read' : '';
+
+    html += '<div class="article-card' + readClass + '" data-id="' + article.id + '">';
+    html += '<div class="card-body">';
+    html += '<div class="source-line"><span class="source-dot">' + sourceInitial + '</span>';
+    html += '<span class="source-name">' + escapeHtml(sourceName) + '</span>';
+    html += '<span class="source-time">' + timeAgo + '</span></div>';
+    html += '<h3>' + escapeHtml(article.title) + '</h3>';
+    if (article.excerpt) html += '<p class="card-excerpt">' + escapeHtml(article.excerpt) + '</p>';
+    html += '</div>';
+    if (article.thumbnail) {
+      html += '<div class="card-thumb"><img src="' + escapeHtml(article.thumbnail) + '" alt="" loading="lazy" onerror="this.parentElement.style.display=\'none\'" /></div>';
+    }
+    html += '</div>';
+  });
+
+  list.innerHTML = html;
+
+  list.querySelectorAll('.article-card').forEach(function(card) {
+    card.addEventListener('click', function() {
+      var id = this.getAttribute('data-id');
+      openArticle(id);
+    });
+  });
 }
+
+function getTimeAgo(date) {
+  var diff = (Date.now() - date.getTime()) / 1000;
+  if (diff < 60) return 'now';
+  if (diff < 3600) return Math.floor(diff / 60) + 'm';
+  if (diff < 86400) return Math.floor(diff / 3600) + 'h';
+  if (diff < 604800) return Math.floor(diff / 86400) + 'd';
+  return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+}
+
+function escapeHtml(str) {
+  if (!str) return '';
+  return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+// ===== OPEN ARTICLE =====
+async function openArticle(id) {
+  var article = articles.find(function(a) { return a.id === id; });
+  if (!article) return;
+
+  currentArticle = article;
+  article.read = true;
+  await dbPut('articles', article);
+
+  var source = sources.find(function(s) { return s.id === article.sourceId; });
+
+  document.getElementById('reader-source-name').textContent = source ? source.name : 'Unknown';
+  document.getElementById('reader-title').textContent = article.title;
+  document.getElementById('reader-author').textContent = article.author || (source ? source.name : 'Unknown');
+  document.getElementById('reader-avatar').textContent = (article.author || (source ? source.name : 'U')).charAt(0).toUpperCase();
+  document.getElementById('reader-date').textContent = new Date(article.date).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' }) + ' · ' + estimateReadTime(article.content) + ' min read';
+
+  var body = document.getElementById('reader-body');
+  var aiBar = document.getElementById('ai-bar');
+  aiBar.style.display = settings.openaiKey ? 'flex' : 'none';
+
+  if (article.content) {
+    body.innerHTML = sanitizeHTML(article.content);
+  } else if (article.link && settings.fullText) {
+    body.innerHTML = '<p style="color: var(--md-on-surface-variant);">Loading full article...</p>';
+    showScreen('reader');
+    try {
+      var resp = await proxyFetch(article.link);
+      var html = await resp.text();
+      var extracted = extractArticleContent(html);
+      article.content = extracted;
+      await dbPut('articles', article);
+      body.innerHTML = sanitizeHTML(extracted);
+
+      if (settings.aiAutoFormat && settings.openaiKey) {
+        body.innerHTML = '<p style="color: var(--md-on-surface-variant);">Formatting with AI...</p>';
+        var formatted = await aiFormat(extracted, 'simplify');
+        body.innerHTML = sanitizeHTML(formatted);
+      }
+    } catch(e) {
+      body.innerHTML = '<p>Could not load full article. <a href="' + escapeHtml(article.link) + '" target="_blank" rel="noopener">Open in browser</a></p>';
+    }
+    return;
+  } else {
+    body.innerHTML = '<p>No content available. <a href="' + escapeHtml(article.link) + '" target="_blank" rel="noopener">Open in browser</a></p>';
+  }
+
+  if (settings.aiAutoFormat && settings.openaiKey && article.content) {
+    var loadingEl = document.getElementById('reader-loading');
+    loadingEl.classList.add('visible');
+    var formatted = await aiFormat(article.content, 'simplify');
+    body.innerHTML = sanitizeHTML(formatted);
+    loadingEl.classList.remove('visible');
+  }
+
+  showScreen('reader');
+
+  var starBtn = document.getElementById('btn-star');
+  starBtn.querySelector('svg').style.fill = article.starred ? 'var(--md-primary)' : '';
+}
+
+function extractArticleContent(html) {
+  var parser = new DOMParser();
+  var doc = parser.parseFromString(html, 'text/html');
+
+  var selectors = ['article', '[role="article"]', '.post-content', '.article-content', '.entry-content', '.post-body', 'main'];
+  var content = null;
+
+  for (var i = 0; i < selectors.length; i++) {
+    content = doc.querySelector(selectors[i]);
+    if (content) break;
+  }
+
+  if (!content) content = doc.body;
+
+  var toRemove = content.querySelectorAll('script, style, nav, header, footer, aside, .sidebar, .comments, .related, .share, .social, [class*="ad-"], [class*="advertisement"]');
+  toRemove.forEach(function(el) { el.remove(); });
+
+  return content.innerHTML;
+}
+
+function sanitizeHTML(html) {
+  var div = document.createElement('div');
+  div.innerHTML = html;
+  div.querySelectorAll('script, style, iframe, object, embed').forEach(function(el) { el.remove(); });
+  div.querySelectorAll('*').forEach(function(el) {
+    el.removeAttribute('onclick');
+    el.removeAttribute('onerror');
+    el.removeAttribute('onload');
+    var style = el.getAttribute('style');
+    if (style && (style.includes('position:fixed') || style.includes('position:absolute'))) {
+      el.removeAttribute('style');
+    }
+  });
+  return div.innerHTML;
+}
+
+function estimateReadTime(content) {
+  if (!content) return 1;
+  var text = content.replace(/<[^>]+>/g, ' ');
+  var words = text.split(/\s+/).length;
+  return Math.max(1, Math.round(words / 200));
+}
+
+// ===== ADD SOURCE =====
+async function addSource(url, name, mode, selector, interval) {
+  var result = await discoverFeed(url);
+  var source = {
+    id: 'src_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6),
+    url: result.url || url,
+    siteUrl: url,
+    name: name,
+    mode: mode,
+    selector: selector,
+    interval: interval,
+    lastFetch: new Date().toISOString(),
+    addedAt: new Date().toISOString()
+  };
+
+  var newArticles = [];
+
+  if (result.type === 'rss') {
+    var parsed = parseRSS(result.content, url);
+    if (!source.name) source.name = parsed.feedTitle || new URL(url).hostname;
+
+    newArticles = parsed.articles.map(function(a) {
+      return {
+        id: 'art_' + Date.now() + '_' + Math.random().toString(36).substr(2, 8),
+        sourceId: source.id,
+        title: a.title,
+        link: a.link,
+        content: a.content,
+        excerpt: stripHtml(a.content).substring(0, 200),
+        date: a.date,
+        author: a.author,
+        thumbnail: a.thumbnail,
+        read: false,
+        starred: false
+      };
+    });
+  } else {
+    if (!source.name) source.name = new URL(url).hostname;
+    var scraped = scrapeHTML(result.content, url, mode, selector);
+
+    newArticles = scraped.map(function(a) {
+      return {
+        id: 'art_' + Date.now() + '_' + Math.random().toString(36).substr(2, 8),
+        sourceId: source.id,
+        title: a.title,
+        link: a.link,
+        content: a.content,
+        excerpt: stripHtml(a.content).substring(0, 200),
+        date: a.date,
+        author: a.author,
+        thumbnail: a.thumbnail,
+        read: false,
+        starred: false
+      };
+    });
+  }
+
+  await dbPut('sources', source);
+  sources.push(source);
+
+  for (var i = 0; i < newArticles.length; i++) {
+    await dbPut('articles', newArticles[i]);
+    articles.push(newArticles[i]);
+  }
+
+  return { source: source, count: newArticles.length };
+}
+
+function stripHtml(html) {
+  if (!html) return '';
+  return html.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+}
+
+// ===== REFRESH FEEDS =====
+async function refreshAllFeeds() {
+  var indicator = document.getElementById('refresh-indicator');
+  indicator.classList.add('active');
+
+  var newCount = 0;
+
+  for (var i = 0; i < sources.length; i++) {
+    try {
+      var source = sources[i];
+      var result = await discoverFeed(source.url);
+      var newArticles = [];
+
+      if (result.type === 'rss') {
+        var parsed = parseRSS(result.content, source.url);
+        newArticles = parsed.articles;
+      } else {
+        newArticles = scrapeHTML(result.content, source.url, source.mode, source.selector);
+      }
+
+      var existingLinks = articles.filter(function(a) { return a.sourceId === source.id; }).map(function(a) { return a.link; });
+
+      for (var j = 0; j < newArticles.length; j++) {
+        var a = newArticles[j];
+        if (a.link && existingLinks.indexOf(a.link) === -1) {
+          var article = {
+            id: 'art_' + Date.now() + '_' + Math.random().toString(36).substr(2, 8),
+            sourceId: source.id,
+            title: a.title,
+            link: a.link,
+            content: a.content,
+            excerpt: stripHtml(a.content).substring(0, 200),
+            date: a.date || new Date().toISOString(),
+            author: a.author,
+            thumbnail: a.thumbnail,
+            read: false,
+            starred: false
+          };
+          await dbPut('articles', article);
+          articles.push(article);
+          newCount++;
+        }
+      }
+
+      source.lastFetch = new Date().toISOString();
+      await dbPut('sources', source);
+    } catch(e) {
+      console.warn('Failed to refresh ' + sources[i].name + ':', e);
+    }
+  }
+
+  indicator.classList.remove('active');
+  renderFeed();
+
+  if (newCount > 0) {
+    showSnackbar(newCount + ' new article' + (newCount > 1 ? 's' : ''));
+  } else if (sources.length > 0) {
+    showSnackbar('All feeds up to date');
+  }
+}
+
+// ===== DISCOVER =====
+var discoverSources = [
+  { name: 'TechCrunch', url: 'https://techcrunch.com/feed/', cat: 'technology', desc: 'Startups, funding, product launches' },
+  { name: 'The Verge', url: 'https://www.theverge.com/rss/index.xml', cat: 'technology', desc: 'Tech news, reviews, science' },
+  { name: 'Ars Technica', url: 'https://feeds.arstechnica.com/arstechnica/index', cat: 'technology', desc: 'Technology, science, policy' },
+  { name: 'Hacker News', url: 'https://hnrss.org/frontpage', cat: 'technology', desc: 'Top stories from Hacker News' },
+  { name: 'CSS-Tricks', url: 'https://css-tricks.com/feed/', cat: 'design', desc: 'Frontend, CSS, web standards' },
+  { name: 'Smashing Magazine', url: 'https://www.smashingmagazine.com/feed/', cat: 'design', desc: 'Web design and development' },
+  { name: 'A List Apart', url: 'https://alistapart.com/main/feed/', cat: 'design', desc: 'Web design, standards, best practices' },
+  { name: 'The Pragmatic Engineer', url: 'https://newsletter.pragmaticengineer.com/feed', cat: 'technology', desc: 'Software engineering careers' },
+  { name: 'MIT Technology Review', url: 'https://www.technologyreview.com/feed/', cat: 'science', desc: 'Emerging technology impact' },
+  { name: 'Wired', url: 'https://www.wired.com/feed/rss', cat: 'technology', desc: 'Tech, science, culture' },
+  { name: 'BBC News', url: 'https://feeds.bbci.co.uk/news/rss.xml', cat: 'news', desc: 'World news from BBC' },
+  { name: 'Reuters', url: 'https://www.reutersagency.com/feed/', cat: 'news', desc: 'Breaking global news' },
+  { name: 'Harvard Business Review', url: 'https://hbr.org/resources/images/article_assets/hbr_rss/feed.xml', cat: 'business', desc: 'Management, leadership, strategy' },
+  { name: 'Nature', url: 'https://www.nature.com/nature.rss', cat: 'science', desc: 'Scientific research and discovery' },
+  { name: '9to5Google', url: 'https://9to5google.com/feed/', cat: 'technology', desc: 'Android, Pixel, Google services' },
+  { name: 'Android Authority', url: 'https://www.androidauthority.com/feed/', cat: 'technology', desc: 'Android news and reviews' },
+  { name: 'Daring Fireball', url: 'https://daringfireball.net/feeds/main', cat: 'technology', desc: 'Apple and technology commentary' },
+  { name: 'Stratechery', url: 'https://stratechery.com/feed/', cat: 'business', desc: 'Tech business strategy analysis' }
+];
+
+function renderDiscover(filter, search) {
+  var list = document.getElementById('discover-list');
+  var cat = filter || 'all';
+  var query = (search || '').toLowerCase();
+
+  var filtered = discoverSources.filter(function(s) {
+    if (cat !== 'all' && s.cat !== cat) return false;
+    if (query && s.name.toLowerCase().indexOf(query) === -1 && s.desc.toLowerCase().indexOf(query) === -1) return false;
+    return true;
+  });
+
+  var addedUrls = sources.map(function(s) { return s.url; });
+
+  var html = '';
+  filtered.forEach(function(src) {
+    var isAdded = addedUrls.indexOf(src.url) !== -1;
+    var initial = src.name.substring(0, 2);
+
+    html += '<div class="discover-item" data-url="' + escapeHtml(src.url) + '" data-name="' + escapeHtml(src.name) + '">';
+    html += '<div class="di-icon">' + initial + '</div>';
+    html += '<div class="di-text"><h4>' + escapeHtml(src.name) + '</h4><p>' + escapeHtml(src.desc) + '</p></div>';
+    html += '<button class="di-action' + (isAdded ? ' added' : '') + '">';
+    if (isAdded) {
+      html += '<svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>';
+    } else {
+      html += '<svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>';
+    }
+    html += '</button></div>';
+  });
+
+  list.innerHTML = html;
+
+  list.querySelectorAll('.di-action:not(.added)').forEach(function(btn) {
+    btn.addEventListener('click', async function(e) {
+      e.stopPropagation();
+      var item = this.closest('.discover-item');
+      var url = item.getAttribute('data-url');
+      var name = item.getAttribute('data-name');
+
+      this.innerHTML = '<div class="spinner" style="width:20px;height:20px;border-width:2px;"></div>';
+
+      try {
+        var result = await addSource(url, name, 'auto', '', settings.refreshInterval);
+        this.classList.add('added');
+        this.innerHTML = '<svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>';
+        showSnackbar('Added ' + name + ' · ' + result.count + ' articles');
+      } catch(e) {
+        this.innerHTML = '<svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>';
+        showSnackbar('Failed: ' + e.message);
+      }
+    });
+  });
+}
+
+// ===== OPML EXPORT/IMPORT =====
+function exportOPML() {
+  var xml = '<?xml version="1.0" encoding="UTF-8"?>\n<opml version="2.0">\n<head><title>RSS Scraper Feeds</title></head>\n<body>\n';
+  sources.forEach(function(s) {
+    xml += '  <outline type="rss" text="' + escapeHtml(s.name) + '" xmlUrl="' + escapeHtml(s.url) + '" htmlUrl="' + escapeHtml(s.siteUrl || s.url) + '"/>\n';
+  });
+  xml += '</body>\n</opml>';
+
+  var blob = new Blob([xml], { type: 'application/xml' });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url; a.download = 'rss-feeds.opml';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showSnackbar('OPML exported');
+}
+
+async function importOPML(file) {
+  var text = await file.text();
+  var parser = new DOMParser();
+  var doc = parser.parseFromString(text, 'text/xml');
+  var outlines = doc.querySelectorAll('outline[xmlUrl]');
+  var count = 0;
+
+  for (var i = 0; i < outlines.length; i++) {
+    var el = outlines[i];
+    var url = el.getAttribute('xmlUrl');
+    var name = el.getAttribute('text') || el.getAttribute('title') || '';
+
+    var exists = sources.find(function(s) { return s.url === url; });
+    if (!exists && url) {
+      try {
+        await addSource(url, name, 'auto', '', settings.refreshInterval);
+        count++;
+      } catch(e) {}
+    }
+  }
+
+  renderFeed();
+  showSnackbar('Imported ' + count + ' feed' + (count !== 1 ? 's' : ''));
+}
+
+// ===== EVENT HANDLERS =====
+function init() {
+  // Navigation
+  document.querySelectorAll('.nav-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      showScreen(this.getAttribute('data-screen'));
+    });
+  });
+
+  // FAB
+  document.getElementById('fab-btn').addEventListener('click', function() {
+    showScreen('add');
+  });
+
+  // Feed tabs
+  document.querySelectorAll('.feed-tab').forEach(function(tab) {
+    tab.addEventListener('click', function() {
+      document.querySelectorAll('.feed-tab').forEach(function(t) { t.classList.remove('active'); });
+      this.classList.add('active');
+      currentFilter = this.getAttribute('data-filter');
+      renderFeed();
+    });
+  });
+
+  // Refresh button
+  document.getElementById('btn-refresh').addEventListener('click', refreshAllFeeds);
+
+  // Scrape mode segments
+  document.querySelectorAll('#scrape-mode .segment').forEach(function(seg) {
+    seg.addEventListener('click', function() {
+      document.querySelectorAll('#scrape-mode .segment').forEach(function(s) { s.classList.remove('active'); });
+      this.classList.add('active');
+      var selectorGroup = document.getElementById('selector-group');
+      selectorGroup.style.display = this.getAttribute('data-mode') === 'selector' ? 'block' : 'none';
+    });
+  });
+
+  // Add source button
+  document.getElementById('btn-add-source').addEventListener('click', async function() {
+    var urlField = document.getElementById('url-field');
+    var nameField = document.getElementById('name-field');
+    var url = urlField.value.trim();
+
+    if (!url) {
+      document.getElementById('url-error').textContent = 'Please enter a URL';
+      document.getElementById('url-error').style.display = 'block';
+      return;
+    }
+
+    if (!url.startsWith('http')) url = 'https://' + url;
+
+    document.getElementById('url-error').style.display = 'none';
+    var loading = document.getElementById('add-loading');
+    loading.classList.add('visible');
+    this.disabled = true;
+
+    try {
+      var mode = document.querySelector('#scrape-mode .segment.active').getAttribute('data-mode');
+      var selector = document.getElementById('selector-field').value.trim();
+      var interval = parseInt(document.getElementById('interval-field').value);
+
+      var result = await addSource(url, nameField.value.trim(), mode, selector, interval);
+
+      showSnackbar('Added ' + result.source.name + ' · ' + result.count + ' articles');
+      urlField.value = '';
+      nameField.value = '';
+      showScreen('feed');
+    } catch(e) {
+      document.getElementById('url-error').textContent = e.message;
+      document.getElementById('url-error').style.display = 'block';
+    }
+
+    loading.classList.remove('visible');
+    this.disabled = false;
+  });
+
+  // Test scrape button
+  document.getElementById('btn-test-scrape').addEventListener('click', async function() {
+    var url = document.getElementById('url-field').value.trim();
+    if (!url) {
+      document.getElementById('url-error').textContent = 'Please enter a URL first';
+      document.getElementById('url-error').style.display = 'block';
+      return;
+    }
+    if (!url.startsWith('http')) url = 'https://' + url;
+
+    document.getElementById('url-error').style.display = 'none';
+    var loading = document.getElementById('add-loading');
+    loading.classList.add('visible');
+    this.disabled = true;
+
+    try {
+      var result = await discoverFeed(url);
+      var count = 0;
+      if (result.type === 'rss') {
+        count = parseRSS(result.content, url).articles.length;
+        showSnackbar('RSS feed found! ' + count + ' articles detected', 'Add it', function() {
+          document.getElementById('btn-add-source').click();
+        });
+      } else {
+        var mode = document.querySelector('#scrape-mode .segment.active').getAttribute('data-mode');
+        var selector = document.getElementById('selector-field').value.trim();
+        count = scrapeHTML(result.content, url, mode, selector).length;
+        showSnackbar('Scraped ' + count + ' articles from HTML', count > 0 ? 'Add it' : null, function() {
+          document.getElementById('btn-add-source').click();
+        });
+      }
+    } catch(e) {
+      document.getElementById('url-error').textContent = e.message;
+      document.getElementById('url-error').style.display = 'block';
+    }
+
+    loading.classList.remove('visible');
+    this.disabled = false;
+  });
+
+  // Share button
+  document.getElementById('btn-share').addEventListener('click', function() {
+    if (currentArticle && navigator.share) {
+      navigator.share({ title: currentArticle.title, url: currentArticle.link });
+    } else if (currentArticle) {
+      navigator.clipboard.writeText(currentArticle.link);
+      showSnackbar('Link copied to clipboard');
+    }
+  });
+
+  // Star button
+  document.getElementById('btn-star').addEventListener('click', async function() {
+    if (!currentArticle) return;
+    currentArticle.starred = !currentArticle.starred;
+    await dbPut('articles', currentArticle);
+    this.querySelector('svg').style.fill = currentArticle.starred ? 'var(--md-primary)' : '';
+    showSnackbar(currentArticle.starred ? 'Starred' : 'Removed from starred');
+  });
+
+  // AI buttons
+  document.getElementById('btn-ai-summarize').addEventListener('click', async function() {
+    if (!currentArticle || !settings.openaiKey) return;
+    var body = document.getElementById('reader-body');
+    var original = body.innerHTML;
+    body.innerHTML = '<p style="color:var(--md-on-surface-variant);">Summarizing...</p>';
+    var result = await aiFormat(currentArticle.content, 'summarize');
+    body.innerHTML = sanitizeHTML(result);
+  });
+
+  document.getElementById('btn-ai-simplify').addEventListener('click', async function() {
+    if (!currentArticle || !settings.openaiKey) return;
+    var body = document.getElementById('reader-body');
+    body.innerHTML = '<p style="color:var(--md-on-surface-variant);">Simplifying...</p>';
+    var result = await aiFormat(currentArticle.content, 'simplify');
+    body.innerHTML = sanitizeHTML(result);
+  });
+
+  // Discover chips
+  document.querySelectorAll('#discover-chips .chip').forEach(function(chip) {
+    chip.addEventListener('click', function() {
+      document.querySelectorAll('#discover-chips .chip').forEach(function(c) { c.classList.remove('active'); });
+      this.classList.add('active');
+      renderDiscover(this.getAttribute('data-cat'), document.getElementById('discover-search').value);
+    });
+  });
+
+  // Discover search
+  document.getElementById('discover-search').addEventListener('input', function() {
+    var cat = document.querySelector('#discover-chips .chip.active').getAttribute('data-cat');
+    renderDiscover(cat, this.value);
+  });
+
+  // Settings switches
+  document.getElementById('switch-ai-auto').addEventListener('click', function() {
+    this.classList.toggle('on');
+    saveSetting('aiAutoFormat', this.classList.contains('on'));
+  });
+  document.getElementById('switch-fulltext').addEventListener('click', function() {
+    this.classList.toggle('on');
+    saveSetting('fullText', this.classList.contains('on'));
+  });
+  document.getElementById('switch-notifs').addEventListener('click', function() {
+    this.classList.toggle('on');
+    var enabled = this.classList.contains('on');
+    saveSetting('notifications', enabled);
+    if (enabled && 'Notification' in window) Notification.requestPermission();
+  });
+
+  // OpenAI key
+  document.getElementById('openai-key-field').addEventListener('change', function() {
+    saveSetting('openaiKey', this.value.trim());
+    document.getElementById('ai-bar').style.display = this.value.trim() ? 'flex' : 'none';
+    showSnackbar(this.value.trim() ? 'API key saved' : 'API key removed');
+  });
+
+  // User agent
+  document.getElementById('ua-field').addEventListener('change', function() {
+    saveSetting('userAgent', this.value.trim());
+  });
+
+  // CORS proxy
+  document.getElementById('proxy-field').addEventListener('change', function() {
+    var val = this.value.trim();
+    saveSetting('corsProxy', val || 'https://api.allorigins.win/raw?url=');
+  });
+
+  // Font size cycling
+  document.getElementById('setting-fontsize').addEventListener('click', function() {
+    var sizes = ['small', 'medium', 'large'];
+    var idx = sizes.indexOf(settings.fontSize);
+    var next = sizes[(idx + 1) % sizes.length];
+    saveSetting('fontSize', next);
+    document.getElementById('val-fontsize').textContent = next.charAt(0).toUpperCase() + next.slice(1);
+  });
+
+  // Interval cycling
+  document.getElementById('setting-interval').addEventListener('click', function() {
+    var intervals = [900000, 1800000, 3600000, 21600000, 86400000];
+    var labels = ['15 min', '30 min', '1 hour', '6 hours', '1 day'];
+    var idx = intervals.indexOf(settings.refreshInterval);
+    var next = (idx + 1) % intervals.length;
+    saveSetting('refreshInterval', intervals[next]);
+    document.getElementById('val-interval').textContent = labels[next];
+  });
+
+  // Export OPML
+  document.getElementById('setting-export').addEventListener('click', exportOPML);
+
+  // Import OPML
+  document.getElementById('setting-import').addEventListener('click', function() {
+    document.getElementById('opml-file-input').click();
+  });
+  document.getElementById('opml-file-input').addEventListener('change', function() {
+    if (this.files[0]) importOPML(this.files[0]);
+    this.value = '';
+  });
+
+  // Clear data
+  document.getElementById('setting-clear').addEventListener('click', function() {
+    showDialog('Clear all data?', 'This will delete all your feeds, articles, and settings. This cannot be undone.', async function() {
+      await dbClear('sources');
+      await dbClear('articles');
+      await dbClear('settings');
+      sources = [];
+      articles = [];
+      settings = { openaiKey: '', aiAutoFormat: false, refreshInterval: 3600000, fullText: true, notifications: false, fontSize: 'medium', userAgent: 'Mozilla/5.0 (compatible; RSSBot/2.0)', corsProxy: 'https://api.allorigins.win/raw?url=' };
+      applySettingsToUI();
+      renderFeed();
+      showSnackbar('All data cleared');
+    });
+  });
+}
+
+// ===== AUTO REFRESH =====
+var refreshTimer = null;
+function startAutoRefresh() {
+  if (refreshTimer) clearInterval(refreshTimer);
+  refreshTimer = setInterval(function() {
+    if (sources.length > 0) refreshAllFeeds();
+  }, settings.refreshInterval);
+}
+
+// ===== BOOT =====
+async function boot() {
+  await openDB();
+  await loadSettings();
+  sources = await dbGetAll('sources');
+  articles = await dbGetAll('articles');
+  renderFeed();
+  renderDiscover();
+  init();
+  startAutoRefresh();
+
+  if (sources.length > 0) {
+    setTimeout(refreshAllFeeds, 3000);
+  }
+}
+
+boot();
+})();
 
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('sw.js');
