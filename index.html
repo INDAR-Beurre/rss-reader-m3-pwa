@@ -88,7 +88,7 @@ html, body {
   width: 100%; height: 100%;
   display: flex; flex-direction: column;
   padding-top: var(--safe-top);
-  padding-bottom: var(--safe-bottom);
+  padding-bottom: 0;
 }
 
 .screen {
@@ -100,7 +100,7 @@ html, body {
 .screen.active { display: flex; }
 
 .nav-bar {
-  height: 80px; flex-shrink: 0;
+  height: auto; flex-shrink: 0; padding-bottom: var(--safe-bottom);
   background: var(--md-surface-container);
   display: flex; align-items: stretch; justify-content: space-around;
   border-top: 1px solid var(--md-surface-container-high);
