@@ -1,0 +1,678 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+<meta name="theme-color" content="#006B5E"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<link rel="manifest" href="manifest.json"/>
+<title>RSS Scraper</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --md-primary: #006B5E;
+  --md-on-primary: #FFFFFF;
+  --md-primary-container: #9CF2E0;
+  --md-on-primary-container: #00201B;
+
+  --md-secondary: #4A635E;
+  --md-on-secondary: #FFFFFF;
+  --md-secondary-container: #CCE8E1;
+  --md-on-secondary-container: #06201B;
+
+  --md-tertiary: #436279;
+  --md-on-tertiary: #FFFFFF;
+  --md-tertiary-container: #C8E6FF;
+  --md-on-tertiary-container: #001E31;
+
+  --md-error: #BA1A1A;
+  --md-on-error: #FFFFFF;
+  --md-error-container: #FFDAD6;
+
+  --md-surface: #F8FAF9;
+  --md-surface-dim: #D8DBD9;
+  --md-surface-bright: #F8FAF9;
+  --md-surface-container-lowest: #FFFFFF;
+  --md-surface-container-low: #F2F4F3;
+  --md-surface-container: #ECF0EE;
+  --md-surface-container-high: #E6EAE8;
+  --md-surface-container-highest: #E1E4E2;
+
+  --md-on-surface: #191C1B;
+  --md-on-surface-variant: #3F4945;
+  --md-outline: #6F7975;
+  --md-outline-variant: #BFC9C5;
+  --md-inverse-surface: #2D3230;
+  --md-inverse-on-surface: #EFF1EF;
+
+  --shape-xs: 4px;
+  --shape-sm: 8px;
+  --shape-md: 12px;
+  --shape-lg: 16px;
+  --shape-xl: 28px;
+  --shape-full: 9999px;
+
+  --display-large: 700 57px/64px system-ui, sans-serif;
+  --display-medium: 700 45px/52px system-ui, sans-serif;
+  --headline-large: 600 32px/40px system-ui, sans-serif;
+  --headline-medium: 600 28px/36px system-ui, sans-serif;
+  --headline-small: 600 24px/32px system-ui, sans-serif;
+  --title-large: 500 22px/28px system-ui, sans-serif;
+  --title-medium: 500 16px/24px system-ui, sans-serif;
+  --title-small: 500 14px/20px system-ui, sans-serif;
+  --body-large: 400 16px/24px system-ui, sans-serif;
+  --body-medium: 400 14px/20px system-ui, sans-serif;
+  --body-small: 400 12px/16px system-ui, sans-serif;
+  --label-large: 500 14px/20px system-ui, sans-serif;
+  --label-medium: 500 12px/16px system-ui, sans-serif;
+  --label-small: 500 11px/16px system-ui, sans-serif;
+
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+html, body {
+  width: 100%; height: 100%;
+  font: var(--body-large);
+  background: var(--md-surface);
+  color: var(--md-on-surface);
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior: none;
+}
+
+.app-shell {
+  width: 100%; height: 100%;
+  display: flex; flex-direction: column;
+  padding-top: var(--safe-top);
+  padding-bottom: var(--safe-bottom);
+}
+
+.screen {
+  flex: 1; overflow-y: auto; overflow-x: hidden;
+  display: none; flex-direction: column;
+  scrollbar-width: none;
+}
+.screen::-webkit-scrollbar { display: none; }
+.screen.active { display: flex; }
+
+/* ===== NAVIGATION BAR ===== */
+.nav-bar {
+  height: 80px; flex-shrink: 0;
+  background: var(--md-surface-container);
+  display: flex; align-items: stretch; justify-content: space-around;
+  border-top: 1px solid var(--md-surface-container-high);
+}
+.nav-btn {
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center; gap: 4px;
+  border: none; background: none; cursor: pointer;
+  padding: 12px 0 16px; min-width: 64px;
+  -webkit-tap-highlight-color: transparent;
+}
+.nav-btn .nav-icon {
+  width: 64px; height: 32px; border-radius: var(--shape-full);
+  display: grid; place-items: center;
+  transition: background 0.2s cubic-bezier(0.2, 0, 0, 1);
+}
+.nav-btn svg { width: 24px; height: 24px; fill: var(--md-on-surface-variant); transition: fill 0.2s; }
+.nav-btn .nav-label { font: var(--label-medium); color: var(--md-on-surface-variant); }
+.nav-btn.active .nav-icon { background: var(--md-secondary-container); }
+.nav-btn.active svg { fill: var(--md-on-secondary-container); }
+.nav-btn.active .nav-label { color: var(--md-on-surface); font-weight: 700; }
+
+/* ===== TOP BAR ===== */
+.top-bar {
+  display: flex; align-items: center; padding: 16px 16px 8px 24px;
+  min-height: 64px;
+}
+.top-bar h1 { font: var(--headline-medium); color: var(--md-on-surface); flex: 1; }
+.icon-btn {
+  width: 48px; height: 48px; border-radius: var(--shape-full);
+  border: none; background: none; cursor: pointer;
+  display: grid; place-items: center;
+  -webkit-tap-highlight-color: transparent;
+}
+.icon-btn:active { background: var(--md-surface-container-high); }
+.icon-btn svg { width: 24px; height: 24px; fill: var(--md-on-surface-variant); }
+
+/* ===== FEED SCREEN ===== */
+.feed-tabs {
+  display: flex; padding: 0 16px;
+  border-bottom: 1px solid var(--md-surface-container-high);
+}
+.feed-tab {
+  padding: 14px 20px 12px; font: var(--title-small);
+  color: var(--md-on-surface-variant);
+  border: none; background: none; cursor: pointer; position: relative;
+}
+.feed-tab.active { color: var(--md-primary); font-weight: 600; }
+.feed-tab.active::after {
+  content: ''; position: absolute; bottom: 0; left: 16px; right: 16px;
+  height: 3px; border-radius: 3px 3px 0 0; background: var(--md-primary);
+}
+
+.feed-cards { padding: 8px 16px 100px; display: flex; flex-direction: column; gap: 2px; }
+.feed-section-label {
+  padding: 24px 16px 8px; font: var(--label-large);
+  color: var(--md-on-surface-variant); letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.article-card {
+  display: flex; gap: 16px; padding: 16px;
+  border-radius: var(--shape-lg);
+  cursor: pointer; align-items: flex-start;
+  transition: background 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.article-card:active { background: var(--md-surface-container-low); }
+.article-card .card-body { flex: 1; min-width: 0; }
+.article-card .source-line { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+.article-card .source-dot {
+  width: 24px; height: 24px; border-radius: var(--shape-sm);
+  display: grid; place-items: center;
+  font: var(--label-small); font-weight: 700;
+  color: var(--md-on-primary-container); background: var(--md-primary-container);
+}
+.article-card .source-name { font: var(--label-medium); color: var(--md-on-surface-variant); }
+.article-card .source-time { font: var(--body-small); color: var(--md-outline); margin-left: auto; }
+.article-card h3 {
+  font: var(--title-medium); color: var(--md-on-surface);
+  display: -webkit-box; -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical; overflow: hidden; margin-bottom: 4px;
+}
+.article-card .card-excerpt {
+  font: var(--body-medium); color: var(--md-on-surface-variant);
+  display: -webkit-box; -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical; overflow: hidden;
+}
+.article-card .card-thumb {
+  width: 88px; height: 88px; border-radius: var(--shape-md);
+  background: var(--md-surface-container-high); flex-shrink: 0;
+}
+
+/* ===== FAB ===== */
+.fab {
+  position: fixed;
+  bottom: calc(96px + var(--safe-bottom)); right: 16px;
+  width: 56px; height: 56px; border-radius: var(--shape-lg);
+  background: var(--md-primary-container); border: none; cursor: pointer;
+  display: grid; place-items: center;
+  box-shadow: 0 3px 5px rgba(0,0,0,0.1), 0 6px 10px rgba(0,0,0,0.08);
+  z-index: 10;
+  -webkit-tap-highlight-color: transparent;
+}
+.fab:active { transform: scale(0.92); }
+.fab svg { width: 24px; height: 24px; fill: var(--md-on-primary-container); }
+
+/* ===== ADD SOURCE SCREEN ===== */
+.back-bar {
+  display: flex; align-items: center; padding: 8px; min-height: 56px;
+}
+.back-bar .spacer { flex: 1; }
+
+.screen-header { padding: 8px 24px 8px; }
+.screen-header h1 { font: var(--headline-medium); color: var(--md-on-surface); letter-spacing: -0.2px; }
+.screen-header p { font: var(--body-large); color: var(--md-on-surface-variant); margin-top: 8px; }
+
+.form-body { padding: 24px 24px 40px; display: flex; flex-direction: column; gap: 28px; }
+
+.m3-field { position: relative; }
+.m3-field input, .m3-field textarea, .m3-field select {
+  width: 100%; padding: 32px 24px 14px;
+  font: var(--body-large); font-size: 20px;
+  color: var(--md-on-surface); background: transparent;
+  border: 2px solid var(--md-outline); border-radius: var(--shape-xl);
+  outline: none; transition: border-color 0.2s;
+}
+.m3-field textarea { min-height: 140px; resize: none; padding-top: 36px; }
+.m3-field select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' fill='%236F7975'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 20px center;
+}
+.m3-field label {
+  position: absolute; top: 10px; left: 24px;
+  font: var(--label-small); color: var(--md-on-surface-variant);
+  pointer-events: none; transition: all 0.2s;
+}
+.m3-field input:focus, .m3-field textarea:focus, .m3-field select:focus {
+  border-color: var(--md-primary); border-width: 3px;
+  padding: 31px 23px 13px;
+}
+.m3-field input:focus + label, .m3-field textarea:focus + label, .m3-field select:focus + label {
+  color: var(--md-primary);
+}
+.m3-field .supporting { padding: 6px 24px 0; font: var(--body-small); color: var(--md-on-surface-variant); }
+
+.segment-group { display: flex; flex-direction: column; }
+.segment-group .segment-label { display: block; padding: 0 0 12px 4px; font: var(--label-large); color: var(--md-on-surface-variant); }
+.segments { display: flex; border-radius: var(--shape-full); border: 1px solid var(--md-outline); overflow: hidden; }
+.segment {
+  flex: 1; padding: 20px 16px; font: var(--label-large); font-size: 16px;
+  text-align: center; background: none; border: none;
+  color: var(--md-on-surface); cursor: pointer;
+  border-right: 1px solid var(--md-outline); transition: background 0.2s, color 0.2s;
+}
+.segment:last-child { border-right: none; }
+.segment.active { background: var(--md-secondary-container); color: var(--md-on-secondary-container); font-weight: 600; }
+.segment:active:not(.active) { background: var(--md-surface-container-high); }
+
+.m3-btn-filled {
+  width: 100%; padding: 24px; font: var(--label-large); font-size: 18px;
+  background: var(--md-primary); color: var(--md-on-primary);
+  border: none; border-radius: var(--shape-full); cursor: pointer;
+  font-weight: 600;
+}
+.m3-btn-filled:active { opacity: 0.88; }
+.m3-btn-tonal {
+  width: 100%; padding: 22px; font: var(--label-large); font-size: 16px;
+  background: var(--md-secondary-container); color: var(--md-on-secondary-container);
+  border: none; border-radius: var(--shape-full); cursor: pointer;
+}
+.m3-btn-tonal:active { opacity: 0.88; }
+
+/* ===== READER SCREEN ===== */
+.reader-content { padding: 0 24px 40px; }
+.reader-content .reader-source {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 8px 16px; border-radius: var(--shape-full);
+  background: var(--md-surface-container); font: var(--label-large);
+  color: var(--md-on-surface-variant); margin-bottom: 16px;
+}
+.reader-content .reader-source .src-mark { width: 8px; height: 8px; border-radius: 50%; background: var(--md-primary); }
+.reader-content h1 { font: var(--headline-large); color: var(--md-on-surface); margin-bottom: 16px; letter-spacing: -0.3px; }
+.reader-content .reader-meta {
+  display: flex; align-items: center; gap: 12px;
+  padding-bottom: 20px; margin-bottom: 24px;
+  border-bottom: 1px solid var(--md-outline-variant);
+}
+.reader-content .reader-meta .meta-avatar {
+  width: 40px; height: 40px; border-radius: var(--shape-full); background: var(--md-surface-container-high);
+}
+.reader-content .reader-meta .meta-info { font: var(--body-medium); color: var(--md-on-surface-variant); }
+.reader-content .reader-meta .meta-info strong { display: block; color: var(--md-on-surface); font: var(--label-large); }
+.reader-content p { font: var(--body-large); font-size: 17px; line-height: 1.75; color: var(--md-on-surface-variant); margin-bottom: 20px; }
+.reader-content .callout {
+  padding: 20px 24px; background: var(--md-primary-container);
+  border-radius: var(--shape-lg); font: var(--body-medium); line-height: 1.6;
+  color: var(--md-on-primary-container); margin: 24px 0;
+}
+
+/* ===== DISCOVER SCREEN ===== */
+.discover-search-bar { margin: 8px 16px 16px; position: relative; }
+.discover-search-bar input {
+  width: 100%; padding: 22px 22px 22px 56px; font: var(--body-large);
+  color: var(--md-on-surface); background: var(--md-surface-container-high);
+  border: none; border-radius: var(--shape-xl); outline: none;
+}
+.discover-search-bar input:focus { background: var(--md-surface-container-highest); }
+.discover-search-bar input::placeholder { color: var(--md-on-surface-variant); }
+.discover-search-bar svg { position: absolute; left: 18px; top: 50%; transform: translateY(-50%); width: 22px; height: 22px; fill: var(--md-on-surface-variant); }
+
+.chip-row { display: flex; gap: 8px; padding: 0 16px 16px; overflow-x: auto; scrollbar-width: none; }
+.chip-row::-webkit-scrollbar { display: none; }
+.chip {
+  padding: 12px 20px; font: var(--label-large);
+  color: var(--md-on-surface-variant); background: none;
+  border: 1px solid var(--md-outline); border-radius: var(--shape-sm);
+  cursor: pointer; white-space: nowrap;
+}
+.chip.active { background: var(--md-secondary-container); border-color: transparent; color: var(--md-on-secondary-container); }
+.chip:active:not(.active) { background: var(--md-surface-container); }
+
+.discover-list { padding: 0 16px 16px; display: flex; flex-direction: column; gap: 2px; }
+.discover-item {
+  display: flex; align-items: center; gap: 16px;
+  padding: 16px; border-radius: var(--shape-md); cursor: pointer;
+}
+.discover-item:active { background: var(--md-surface-container-low); }
+.discover-item .di-icon {
+  width: 52px; height: 52px; border-radius: var(--shape-md);
+  background: var(--md-surface-container-high); display: grid; place-items: center;
+  font: var(--label-large); font-weight: 700; color: var(--md-on-surface-variant); flex-shrink: 0;
+}
+.discover-item .di-text { flex: 1; min-width: 0; }
+.discover-item .di-text h4 { font: var(--title-small); color: var(--md-on-surface); }
+.discover-item .di-text p { font: var(--body-small); color: var(--md-outline); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.discover-item .di-action {
+  width: 44px; height: 44px; border-radius: var(--shape-full);
+  border: 1px solid var(--md-outline); background: none; cursor: pointer;
+  display: grid; place-items: center;
+}
+.discover-item .di-action:active { background: var(--md-surface-container-high); }
+.discover-item .di-action svg { width: 20px; height: 20px; fill: var(--md-on-surface-variant); }
+
+/* ===== SETTINGS SCREEN ===== */
+.settings-content { padding: 0 0 24px; }
+.settings-section-label { padding: 28px 24px 8px; font: var(--label-large); color: var(--md-primary); text-transform: uppercase; letter-spacing: 0.5px; }
+.settings-item {
+  display: flex; align-items: center; gap: 16px;
+  padding: 18px 24px; cursor: pointer;
+}
+.settings-item:active { background: var(--md-surface-container-low); }
+.settings-item .si-icon { width: 24px; height: 24px; fill: var(--md-on-surface-variant); flex-shrink: 0; }
+.settings-item .si-body { flex: 1; }
+.settings-item .si-body h4 { font: var(--body-large); color: var(--md-on-surface); }
+.settings-item .si-body p { font: var(--body-small); color: var(--md-on-surface-variant); margin-top: 2px; }
+.settings-item .si-value { font: var(--label-large); color: var(--md-on-surface-variant); }
+
+.m3-switch {
+  width: 52px; height: 32px; border-radius: var(--shape-full);
+  background: var(--md-surface-container-highest); border: 2px solid var(--md-outline);
+  position: relative; cursor: pointer; transition: all 0.2s cubic-bezier(0.2, 0, 0, 1);
+  flex-shrink: 0;
+}
+.m3-switch::after {
+  content: ''; position: absolute; top: 6px; left: 6px;
+  width: 16px; height: 16px; border-radius: 50%; background: var(--md-outline);
+  transition: all 0.2s cubic-bezier(0.2, 0, 0, 1);
+}
+.m3-switch.on { background: var(--md-primary); border-color: var(--md-primary); }
+.m3-switch.on::after { left: 26px; width: 20px; height: 20px; top: 4px; background: var(--md-on-primary); }
+
+.settings-fields { padding: 8px 24px 16px; display: flex; flex-direction: column; gap: 20px; }
+.settings-fields .m3-field input { padding: 28px 20px 12px; font-size: 16px; border-radius: var(--shape-xl); }
+.settings-fields .m3-field label { left: 20px; }
+</style>
+</head>
+<body>
+<div class="app-shell">
+
+  <!-- ===== FEED ===== -->
+  <div class="screen active" id="screen-feed">
+    <div class="top-bar">
+      <h1>Feeds</h1>
+      <button class="icon-btn"><svg viewBox="0 0 24 24"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg></button>
+    </div>
+    <div class="feed-tabs">
+      <button class="feed-tab active" onclick="setTab(this)">All</button>
+      <button class="feed-tab" onclick="setTab(this)">Unread</button>
+      <button class="feed-tab" onclick="setTab(this)">Starred</button>
+    </div>
+    <div class="feed-cards">
+      <div class="feed-section-label">Today</div>
+      <div class="article-card" onclick="showScreen('reader')">
+        <div class="card-body">
+          <div class="source-line">
+            <span class="source-dot">V</span>
+            <span class="source-name">The Verge</span>
+            <span class="source-time">35m</span>
+          </div>
+          <h3>Android 16 redesigns the notification shade with dynamic grouping</h3>
+          <p class="card-excerpt">Google is overhauling notifications with AI-powered clustering that groups related messages across apps into threads.</p>
+        </div>
+        <div class="card-thumb"></div>
+      </div>
+      <div class="article-card" onclick="showScreen('reader')">
+        <div class="card-body">
+          <div class="source-line">
+            <span class="source-dot" style="background: var(--md-tertiary-container); color: var(--md-on-tertiary-container);">A</span>
+            <span class="source-name">Ars Technica</span>
+            <span class="source-time">1h</span>
+          </div>
+          <h3>Why developers are returning to RSS in 2026</h3>
+          <p class="card-excerpt">Feed readers are making a quiet comeback as developers tire of algorithmic timelines and walled gardens.</p>
+        </div>
+      </div>
+      <div class="article-card" onclick="showScreen('reader')">
+        <div class="card-body">
+          <div class="source-line">
+            <span class="source-dot" style="background: var(--md-secondary-container); color: var(--md-on-secondary-container);">H</span>
+            <span class="source-name">Hacker News</span>
+            <span class="source-time">2h</span>
+          </div>
+          <h3>Show HN: Open-source headless scraper for JavaScript-heavy sites</h3>
+          <p class="card-excerpt">A lightweight Chromium-based scraper that outputs clean semantic HTML, designed for RSS feed generation.</p>
+        </div>
+      </div>
+      <div class="feed-section-label">Yesterday</div>
+      <div class="article-card" onclick="showScreen('reader')">
+        <div class="card-body">
+          <div class="source-line">
+            <span class="source-dot" style="background: var(--md-surface-container-highest); color: var(--md-on-surface-variant);">S</span>
+            <span class="source-name">Smashing Magazine</span>
+            <span class="source-time">18h</span>
+          </div>
+          <h3>CSS reset for 2026: only the rules you actually need</h3>
+          <p class="card-excerpt">An updated minimal reset that accounts for container queries, view transitions, and the new dialog element.</p>
+        </div>
+      </div>
+      <div class="article-card" onclick="showScreen('reader')">
+        <div class="card-body">
+          <div class="source-line">
+            <span class="source-dot" style="background: var(--md-surface-container-highest); color: var(--md-on-surface-variant);">W</span>
+            <span class="source-name">Wired</span>
+            <span class="source-time">22h</span>
+          </div>
+          <h3>The economics of free-tier APIs that power indie RSS readers</h3>
+          <p class="card-excerpt">Small developer-run services face increasing bandwidth costs as their user bases grow beyond hobbyist scale.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== ADD SOURCE ===== -->
+  <div class="screen" id="screen-add">
+    <div class="back-bar">
+      <button class="icon-btn" onclick="showScreen('feed')">
+        <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+      </button>
+      <div class="spacer"></div>
+    </div>
+    <div class="screen-header">
+      <h1>Add source</h1>
+      <p>Paste a URL and we'll find or build a feed from it, even for JavaScript-rendered pages.</p>
+    </div>
+    <div class="form-body">
+      <div class="m3-field">
+        <input type="url" placeholder=" " id="url-field" />
+        <label for="url-field">Website URL</label>
+        <p class="supporting">Any page — we'll detect the RSS feed or scrape one</p>
+      </div>
+      <div class="m3-field">
+        <input type="text" placeholder=" " id="name-field" />
+        <label for="name-field">Feed name</label>
+      </div>
+      <div class="segment-group">
+        <span class="segment-label">Scrape mode</span>
+        <div class="segments">
+          <button class="segment active" onclick="setSegment(this)">Auto-detect</button>
+          <button class="segment" onclick="setSegment(this)">Full page</button>
+          <button class="segment" onclick="setSegment(this)">CSS selector</button>
+        </div>
+      </div>
+      <div class="m3-field">
+        <input type="text" placeholder=" " id="selector-field" />
+        <label for="selector-field">CSS selector</label>
+        <p class="supporting">e.g. article, .post-content, main > div</p>
+      </div>
+      <div class="m3-field">
+        <select id="interval-field">
+          <option>Every 15 minutes</option>
+          <option>Every 30 minutes</option>
+          <option selected>Every hour</option>
+          <option>Every 6 hours</option>
+          <option>Once a day</option>
+        </select>
+        <label for="interval-field">Refresh interval</label>
+      </div>
+      <button class="m3-btn-filled" onclick="showScreen('feed')">Add source</button>
+      <button class="m3-btn-tonal">Test scrape first</button>
+    </div>
+  </div>
+
+  <!-- ===== READER ===== -->
+  <div class="screen" id="screen-reader">
+    <div class="back-bar">
+      <button class="icon-btn" onclick="showScreen('feed')">
+        <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+      </button>
+      <div class="spacer"></div>
+      <button class="icon-btn"><svg viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/></svg></button>
+      <button class="icon-btn"><svg viewBox="0 0 24 24"><path d="M17 3H7c-1.1 0-2 .9-2 2v16l7-3 7 3V5c0-1.1-.9-2-2-2z"/></svg></button>
+    </div>
+    <div class="reader-content">
+      <div class="reader-source"><span class="src-mark"></span> The Verge</div>
+      <h1>Android 16 redesigns the notification shade with dynamic grouping</h1>
+      <div class="reader-meta">
+        <div class="meta-avatar"></div>
+        <div class="meta-info"><strong>Dieter Bohn</strong>May 31, 2026 · 6 min read</div>
+      </div>
+      <p>Google is overhauling the notification system in Android 16 with "dynamic grouping" — an AI-powered feature that clusters related notifications across apps into unified conversation threads.</p>
+      <div class="callout">Notifications from the same conversation thread (email reply, Slack message, SMS) are now grouped into a single expandable card, regardless of the source app.</div>
+      <p>The system uses on-device language models to identify conversational context, ensuring that related messages aren't lost in the noise of unrelated alerts. Users can train the grouping by manually splitting or merging notification clusters.</p>
+      <p>Developer Preview 3 ships this week with the feature enabled by default on Pixel. OEM adoption is expected by Q4 2026.</p>
+    </div>
+  </div>
+
+  <!-- ===== DISCOVER ===== -->
+  <div class="screen" id="screen-discover">
+    <div class="top-bar"><h1>Discover</h1></div>
+    <div class="discover-search-bar">
+      <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+      <input type="text" placeholder="Search sources or paste URL" />
+    </div>
+    <div class="chip-row">
+      <button class="chip active" onclick="setChip(this)">All</button>
+      <button class="chip" onclick="setChip(this)">Technology</button>
+      <button class="chip" onclick="setChip(this)">Design</button>
+      <button class="chip" onclick="setChip(this)">Business</button>
+      <button class="chip" onclick="setChip(this)">Science</button>
+      <button class="chip" onclick="setChip(this)">Gaming</button>
+    </div>
+    <div class="discover-list">
+      <div class="discover-item">
+        <div class="di-icon">TC</div>
+        <div class="di-text"><h4>TechCrunch</h4><p>techcrunch.com · Startups, funding, product launches</p></div>
+        <button class="di-action"><svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg></button>
+      </div>
+      <div class="discover-item">
+        <div class="di-icon">PE</div>
+        <div class="di-text"><h4>The Pragmatic Engineer</h4><p>blog.pragmaticengineer.com · Software engineering</p></div>
+        <button class="di-action"><svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg></button>
+      </div>
+      <div class="discover-item">
+        <div class="di-icon">CT</div>
+        <div class="di-text"><h4>CSS-Tricks</h4><p>css-tricks.com · Frontend, CSS, web standards</p></div>
+        <button class="di-action"><svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg></button>
+      </div>
+      <div class="discover-item">
+        <div class="di-icon">DF</div>
+        <div class="di-text"><h4>Daring Fireball</h4><p>daringfireball.net · Apple, tech commentary</p></div>
+        <button class="di-action"><svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg></button>
+      </div>
+      <div class="discover-item">
+        <div class="di-icon">9t</div>
+        <div class="di-text"><h4>9to5Google</h4><p>9to5google.com · Android, Pixel, Google services</p></div>
+        <button class="di-action"><svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== SETTINGS ===== -->
+  <div class="screen" id="screen-settings">
+    <div class="top-bar"><h1>Settings</h1></div>
+    <div class="settings-content">
+      <div class="settings-section-label">Scraping</div>
+      <div class="settings-item">
+        <svg class="si-icon" viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
+        <div class="si-body"><h4>Default refresh interval</h4><p>How often to check sources for updates</p></div>
+        <span class="si-value">1 hour</span>
+      </div>
+      <div class="settings-item">
+        <svg class="si-icon" viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z"/></svg>
+        <div class="si-body"><h4>Render engine</h4><p>Used for JavaScript-heavy pages</p></div>
+        <span class="si-value">Chromium</span>
+      </div>
+      <div class="settings-item">
+        <svg class="si-icon" viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zM6 20V4h7v5h5v11H6z"/></svg>
+        <div class="si-body"><h4>Full-text extraction</h4><p>Always scrape complete article body</p></div>
+        <div class="m3-switch on" onclick="this.classList.toggle('on')"></div>
+      </div>
+      <div class="settings-item">
+        <svg class="si-icon" viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 14H4V8l8 5 8-5v10zm-8-7L4 6h16l-8 5z"/></svg>
+        <div class="si-body"><h4>Notifications</h4><p>Alert when new articles arrive</p></div>
+        <div class="m3-switch" onclick="this.classList.toggle('on')"></div>
+      </div>
+      <div class="settings-section-label">Display</div>
+      <div class="settings-item">
+        <svg class="si-icon" viewBox="0 0 24 24"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9c.83 0 1.5-.67 1.5-1.5 0-.39-.15-.74-.39-1.01-.23-.26-.38-.61-.38-.99 0-.83.67-1.5 1.5-1.5H16c2.76 0 5-2.24 5-5 0-4.42-4.03-8-9-8z"/></svg>
+        <div class="si-body"><h4>Color seed</h4><p>Material You dynamic color source</p></div>
+        <span class="si-value">Teal</span>
+      </div>
+      <div class="settings-item">
+        <svg class="si-icon" viewBox="0 0 24 24"><path d="M5 4v3h5.5v12h3V7H19V4z"/></svg>
+        <div class="si-body"><h4>Reader font size</h4><p>Text size in article view</p></div>
+        <span class="si-value">Large</span>
+      </div>
+      <div class="settings-section-label">Advanced</div>
+      <div class="settings-fields">
+        <div class="m3-field">
+          <input type="text" placeholder=" " id="ua-field" value="Mozilla/5.0 (compatible; FeedBot/2.0)" />
+          <label for="ua-field">Custom User-Agent</label>
+        </div>
+        <div class="m3-field">
+          <input type="url" placeholder=" " id="proxy-field" />
+          <label for="proxy-field">Proxy address</label>
+          <p class="supporting">socks5:// or http:// proxy for scraping requests</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FAB -->
+  <button class="fab" id="fab-btn" onclick="showScreen('add')">
+    <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+  </button>
+
+  <!-- Navigation Bar -->
+  <nav class="nav-bar">
+    <button class="nav-btn active" onclick="showScreen('feed')">
+      <div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M6.18 15.64a2.18 2.18 0 0 1 2.18 2.18C8.36 19 7.36 20 6.18 20C5 20 4 19 4 17.82a2.18 2.18 0 0 1 2.18-2.18M4 4.44A15.56 15.56 0 0 1 19.56 20h-2.83A12.73 12.73 0 0 0 4 7.27V4.44m0 5.66a9.9 9.9 0 0 1 9.9 9.9h-2.83A7.07 7.07 0 0 0 4 12.93V10.1z"/></svg></div>
+      <span class="nav-label">Feed</span>
+    </button>
+    <button class="nav-btn" onclick="showScreen('discover')">
+      <div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M12 10.9c-.61 0-1.1.49-1.1 1.1s.49 1.1 1.1 1.1c.61 0 1.1-.49 1.1-1.1s-.49-1.1-1.1-1.1zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm2.19 12.19L6 18l3.81-8.19L18 6l-3.81 8.19z"/></svg></div>
+      <span class="nav-label">Discover</span>
+    </button>
+    <button class="nav-btn" onclick="showScreen('settings')">
+      <div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg></div>
+      <span class="nav-label">Settings</span>
+    </button>
+  </nav>
+</div>
+
+<script>
+function showScreen(name) {
+  document.querySelectorAll('.screen').forEach(function(s) { s.classList.remove('active'); });
+  document.getElementById('screen-' + name).classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(function(n) { n.classList.remove('active'); });
+  var map = { feed: 0, discover: 1, settings: 2, add: -1, reader: -1 };
+  var idx = map[name];
+  if (idx >= 0) document.querySelectorAll('.nav-btn')[idx].classList.add('active');
+  var fab = document.getElementById('fab-btn');
+  fab.style.display = (name === 'feed') ? 'grid' : 'none';
+}
+function setTab(el) {
+  el.parentElement.querySelectorAll('.feed-tab').forEach(function(t) { t.classList.remove('active'); });
+  el.classList.add('active');
+}
+function setSegment(el) {
+  el.parentElement.querySelectorAll('.segment').forEach(function(s) { s.classList.remove('active'); });
+  el.classList.add('active');
+}
+function setChip(el) {
+  el.parentElement.querySelectorAll('.chip').forEach(function(c) { c.classList.remove('active'); });
+  el.classList.add('active');
+}
+
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js');
+}
+</script>
+</body>
+</html>

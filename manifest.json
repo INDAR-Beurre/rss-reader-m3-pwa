@@ -1,0 +1,24 @@
+{
+  "name": "RSS Scraper",
+  "short_name": "RSS",
+  "description": "Scrape websites into clean RSS feeds",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#F8FAF9",
+  "theme_color": "#006B5E",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' rx='40' fill='%23006B5E'/%3E%3Cpath d='M48 128a16 16 0 1 1 0 32 16 16 0 0 1 0-32M32 48a112 112 0 0 1 112 112h-24a88 88 0 0 0-88-88V48m0 40a72 72 0 0 1 72 72h-24a48 48 0 0 0-48-48V88' fill='%239CF2E0'/%3E%3C/svg%3E",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='100' fill='%23006B5E'/%3E%3Cpath d='M128 340a44 44 0 1 1 0 88 44 44 0 0 1 0-88M84 128a300 300 0 0 1 300 300h-64a236 236 0 0 0-236-236V128m0 108a192 192 0 0 1 192 192h-64a128 128 0 0 0-128-128V236' fill='%239CF2E0'/%3E%3C/svg%3E",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
