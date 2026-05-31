@@ -432,20 +432,21 @@ html, body {
   background: var(--md-inverse-surface); color: var(--md-inverse-on-surface);
   padding: 16px 20px; border-radius: var(--shape-md);
   font: var(--body-medium); z-index: 100;
-  transform: translateY(120%); transition: transform 0.3s cubic-bezier(0.2, 0, 0, 1);
+  transform: translateY(calc(100% + 120px)); transition: transform 0.3s cubic-bezier(0.2, 0, 0, 1);
   display: flex; align-items: center; gap: 12px;
+  pointer-events: none; opacity: 0;
 }
-.snackbar.visible { transform: translateY(0); }
+.snackbar.visible { transform: translateY(0); pointer-events: auto; opacity: 1; }
 .snackbar .snack-action {
   margin-left: auto; font: var(--label-large); color: var(--md-primary-container);
   background: none; border: none; cursor: pointer;
 }
 
 .refresh-pull {
-  display: flex; align-items: center; justify-content: center;
-  padding: 12px; overflow: hidden; max-height: 0; transition: max-height 0.3s;
+  display: none; align-items: center; justify-content: center;
+  padding: 12px; overflow: hidden;
 }
-.refresh-pull.active { max-height: 48px; }
+.refresh-pull.active { display: flex; }
 .refresh-pull .spinner { width: 24px; height: 24px; }
 
 .dialog-overlay {
@@ -599,12 +600,12 @@ html, body {
   <div class="screen" id="screen-settings">
     <div class="top-bar"><h1>Settings</h1></div>
     <div class="settings-content">
-      <div class="settings-section-label">AI Engine</div>
+      <div class="settings-section-label">AI Engine (optional)</div>
       <div class="settings-fields">
         <div class="m3-field">
           <input type="password" placeholder=" " id="openai-key-field" />
           <label for="openai-key-field">OpenAI API key</label>
-          <p class="supporting">Used for AI summarization and content formatting</p>
+          <p class="supporting">Optional — enables Summarize & Simplify buttons in the reader</p>
         </div>
       </div>
       <div class="settings-item" id="setting-ai-auto">
@@ -844,7 +845,9 @@ function applySettingsToUI() {
 // ===== CORS PROXY FETCH =====
 function proxyFetch(url) {
   var proxy = settings.corsProxy || 'https://api.allorigins.win/raw?url=';
-  return fetch(proxy + encodeURIComponent(url));
+  var controller = new AbortController();
+  var timeout = setTimeout(function() { controller.abort(); }, 15000);
+  return fetch(proxy + encodeURIComponent(url), { signal: controller.signal }).finally(function() { clearTimeout(timeout); });
 }
 
 // ===== RSS PARSER =====
@@ -1810,10 +1813,6 @@ async function boot() {
   renderDiscover();
   init();
   startAutoRefresh();
-
-  if (sources.length > 0) {
-    setTimeout(refreshAllFeeds, 3000);
-  }
 }
 
 boot();
